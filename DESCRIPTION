@@ -1,4 +1,4 @@
-Package: stDataDict
+Package: stdatadict
 Title: Create Data Dictionary or Variable Selection File from SecuTrial Export
 Version: 0.0.0.9000
 Authors@R: 
