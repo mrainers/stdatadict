@@ -11,7 +11,6 @@ read_meta_file <- function(data_dir, file_name,
                            delim = ";", decimal_mark = ",",
                            encoding = "UTF-8",
                            is_zip = FALSE) {
-
   if (is_zip) {
     data_file <- unz(data_dir, file_name)
   } else {
@@ -27,23 +26,27 @@ read_meta_file <- function(data_dir, file_name,
   }
 
   .data <- read_delim(data_file,
-                      delim = delim,
-                      locale = readr::locale(
-                        date_names = "de",
-                        decimal_mark = decimal_mark,
-                        grouping_mark = ""),
-                      escape_backslash = TRUE,
-                      escape_double = FALSE)
+    delim = delim,
+    locale = readr::locale(
+      date_names = "de",
+      decimal_mark = decimal_mark,
+      grouping_mark = ""
+    ),
+    escape_backslash = TRUE,
+    escape_double = FALSE
+  )
 
   # undo warning suppression
   if (file_name == "cl.csv") withr::local_options(warn = defaultW)
 
 
   # remove last empty column added by secutrial export (if it is there)
-  lastcolname <- .data %>% names() %>% last()
+  lastcolname <- .data %>%
+    names() %>%
+    last()
   # Only do something if last column is (X|...)<number>
   if (str_detect(lastcolname, "(^\\.\\.\\.|^X)\\d*$")) {
-    if (.data[[lastcolname]] %>% is.na %>% all) { # if last column is empty, delete it.
+    if (.data[[lastcolname]] %>% is.na() %>% all()) { # if last column is empty, delete it.
       .data <- .data %>% select(-last_col())
     }
   }
@@ -52,7 +55,7 @@ read_meta_file <- function(data_dir, file_name,
   # TODO long names: required_meta_files_long # long names of meta files
   files_with_hidden <- c("fs.csv", "qs.csv", "is.csv")
   if (file_name %in% files_with_hidden) {
-    if(!'hidden' %in% names(.data)) .data$hidden <- as.numeric(NA)
+    if (!"hidden" %in% names(.data)) .data$hidden <- as.numeric(NA)
   }
 
   .data
@@ -92,18 +95,16 @@ read_meta_file <- function(data_dir, file_name,
 #' @examplesIf interactive()
 #' data_dir <- file.choose()
 #' metadata <- read_metadata(data_dir)
-
 read_metadata <- function(data_dir,
                           delim = ";", decimal_mark = ",",
                           encoding = "UTF-8") {
-
   meta_files <- c(
-    vp   = "vp.csv",   # Visit Plan
+    vp   = "vp.csv", # Visit Plan
     vpfs = "vpfs.csv", # Visit-Form-Connection
-    fs   = "fs.csv",   # Form Information
-    qs   = "qs.csv",   # Question Labels & Subform affiliation
-    cl   = "cl.csv",   # Value Labels
-    is   = "is.csv"    # Question and Variable Labels
+    fs   = "fs.csv", # Form Information
+    qs   = "qs.csv", # Question Labels & Subform affiliation
+    cl   = "cl.csv", # Value Labels
+    is   = "is.csv" # Question and Variable Labels
   )
 
   # Check if data_dir is an existing zip file or directory.
@@ -113,27 +114,25 @@ read_metadata <- function(data_dir,
   if (is_zip) {
     read_files <- utils::unzip(data_dir, list = TRUE)$Name %>% intersect(meta_files)
   } else if (is_dir) {
-    read_files <- list.files(data_dir, pattern="*.csv") %>% intersect(meta_files)
+    read_files <- list.files(data_dir, pattern = "*.csv") %>% intersect(meta_files)
   } else {
     stop(paste("no zip file or directory found:", data_dir))
   }
 
   # check if all needed files are included in the (zip) directory.
   missing_files <- setdiff(meta_files, read_files)
-  if(length(missing_files > 0)) {
+  if (length(missing_files > 0)) {
     stop(paste(
       "Can not load all required meta data files. The following files are missing:",
       paste(missing_files, collapse = "\n"),
       sep = "\n"
-      ))
+    ))
   }
 
   # Read meta data files from Secutrial or tsExport
   meta_files %>%
     map(~ {
       print(paste("Read:", .x))
-      read_meta_file(data_dir, .x, delim, decimal_mark, encoding, is_zip)})
+      read_meta_file(data_dir, .x, delim, decimal_mark, encoding, is_zip)
+    })
 }
-
-
-
