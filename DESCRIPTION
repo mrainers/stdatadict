@@ -2,12 +2,20 @@ Package: stdatadict
 Title: Create Data Dictionary or Variable Selection File from SecuTrial Export
 Version: 0.0.0.9000
 Authors@R: 
-    person("Miriam", "Rainers", , "miriam.rainers@med.uni-goe", role = c("aut", "cre"),
+    person("Miriam", "Rainers", , "miriam.rainers@med.uni-goettingen.de", 
+           role = c("aut", "cre"),
            comment = c(ORCID = "0009-0003-8385-8968"))
-Description: Provide functions for creating a DataDictionary or Variable Selection
-    Excel file based on the meta data files of an Secutrial csv file export and
-    additional files provided by the user.
+Description: This package provides functions that help to create a 
+    Data Dictionary or Variable Selection Excel file from the meta data files of 
+    an Secutrial csv export and additional files provided by the user.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
+Imports: 
+    dplyr,
+    magrittr,
+    purrr,
+    readr,
+    stringr,
+    withr

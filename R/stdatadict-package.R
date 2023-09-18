@@ -1,0 +1,18 @@
+#' @keywords internal
+"_PACKAGE"
+
+## usethis namespace: start
+#' @importFrom dplyr filter
+#' @importFrom dplyr group_by
+#' @importFrom dplyr last
+#' @importFrom dplyr last_col
+#' @importFrom dplyr mutate
+#' @importFrom dplyr select
+#' @importFrom magrittr %>%
+#' @importFrom purrr map
+#' @importFrom readr locale
+#' @importFrom readr read_delim
+#' @importFrom stringr str_detect
+#' @importFrom withr local_options
+## usethis namespace: end
+NULL
