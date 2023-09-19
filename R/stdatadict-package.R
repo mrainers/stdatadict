@@ -2,11 +2,13 @@
 "_PACKAGE"
 
 ## usethis namespace: start
+#' @importFrom dplyr distinct
 #' @importFrom dplyr filter
 #' @importFrom dplyr group_by
 #' @importFrom dplyr last
 #' @importFrom dplyr last_col
 #' @importFrom dplyr mutate
+#' @importFrom dplyr pull
 #' @importFrom dplyr select
 #' @importFrom magrittr %>%
 #' @importFrom purrr discard
@@ -14,8 +16,12 @@
 #' @importFrom purrr some
 #' @importFrom readr locale
 #' @importFrom readr read_delim
+#' @importFrom rlang .data
 #' @importFrom stringr str_detect
+#' @importFrom stringr str_remove
 #' @importFrom stringr str_remove_all
+#' @importFrom stringr str_starts
+#' @importFrom stringr str_sub
 #' @importFrom stringr str_subset
 #' @importFrom withr local_options
 ## usethis namespace: end

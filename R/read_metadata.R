@@ -25,15 +25,15 @@ read_meta_file <- function(data_dir, file_name,
     withr::local_options(list(warn = -1))
   }
 
-  .data <- read_delim(data_file,
-                      delim = delim,
-                      locale = readr::locale(
-                        date_names = "de",
-                        decimal_mark = decimal_mark,
-                        grouping_mark = ""
-                      ),
-                      escape_backslash = TRUE,
-                      escape_double = FALSE
+  data <- read_delim(data_file,
+                     delim = delim,
+                     locale = readr::locale(
+                       date_names = "de",
+                       decimal_mark = decimal_mark,
+                       grouping_mark = ""
+                     ),
+                     escape_backslash = TRUE,
+                     escape_double = FALSE
   )
 
   # undo warning suppression
@@ -41,24 +41,24 @@ read_meta_file <- function(data_dir, file_name,
 
 
   # remove last empty column added by secutrial export (if it is there)
-  lastcolname <- .data %>%
+  lastcolname <- data %>%
     names() %>%
     last()
   # Only do something if last column is (X|...)<number>
   if (str_detect(lastcolname, "(^\\.\\.\\.|^X)\\d*$")) {
-    if (.data[[lastcolname]] %>% is.na() %>% all()) { # if last column is empty, delete it.
-      .data <- .data %>% select(-last_col())
+    if (data[[lastcolname]] %>% is.na() %>% all()) { # if last column is empty, delete it.
+      data <- data %>% select(-last_col())
     }
   }
 
   # Add 'hidden' variable if it does not exist to 'fs', 'qs' and 'is'.
-  # TODO long names: required_meta_files_long # long names of meta files
-  files_with_hidden <- c("fs.csv", "qs.csv", "is.csv")
-  if (file_name %in% files_with_hidden) {
-    if (!"hidden" %in% names(.data)) .data$hidden <- as.numeric(NA)
+  files_with_hidden <- c("fs.csv", "qs.csv", "is.csv",
+                         "^forms_", "^questions_", "^items_")
+  if (any(str_detect(file_name, files_with_hidden))) {
+    if (!"hidden" %in% names(data)) data$hidden <- as.numeric(NA)
   }
 
-  .data
+  data
 }
 
 
@@ -157,7 +157,7 @@ read_metadata <- function(data_dir,
 
   meta_files_read %>%
     map(~ {
-      print(paste("Read:", .x))
+      cat(paste("\nRead:", .x))
       read_meta_file(data_dir, .x, delim, decimal_mark, encoding, is_zip)
     })
 }
