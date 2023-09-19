@@ -20,7 +20,7 @@ read_meta_file <- function(data_dir, file_name,
   # suppress warnings if filename is cl.csv, because this file is bugged. It has
   # different number of columns in different row, which causes non problematic
   # parsing issues.
-  if (file_name == "cl.csv") {
+  if (str_detect(file_name, "^cl")) {
     defaultW <- getOption("warn")
     withr::local_options(list(warn = -1))
   }
@@ -67,12 +67,12 @@ read_meta_file <- function(data_dir, file_name,
 #' @description
 #' Read the following csv files from the export directory or zip file:
 #'
-#' * vp.csv
-#' * vpfs.csv
-#' * fs.csv
-#' * qs.csv
-#' * cl.csv
-#' * is.csv
+#' - vp.csv or visitplan*.csv
+#' - vpfs.csv or visitplanforms*.csv
+#' - fs.csv or forms*.csv
+#' - qs.csv or questions*.csv
+#' - cl.csv or cl*.csv
+#' - is.csv or items*.csv
 #'
 #' If one of this files isn't present in the data directory, the function exits
 #' with an error message and no files where read.
@@ -98,13 +98,22 @@ read_meta_file <- function(data_dir, file_name,
 read_metadata <- function(data_dir,
                           delim = ";", decimal_mark = ",",
                           encoding = "UTF-8") {
-  meta_files <- c(
-    vp   = "vp.csv",   # Visit Plan
-    vpfs = "vpfs.csv", # Visit-Form-Connection
-    fs   = "fs.csv",   # Form Information
-    qs   = "qs.csv",   # Question Labels & Subform affiliation
-    cl   = "cl.csv",   # Value Labels
-    is   = "is.csv"    # Question and Variable Labels
+  meta_files_short <- c(
+    vp   = "^vp.csv$",   # Visit Plan
+    vpfs = "^vpfs.csv$", # Visit-Form-Connection
+    fs   = "^fs.csv$",   # Form Information
+    qs   = "^qs.csv$",   # Question Labels & Subform affiliation
+    cl   = "^cl.csv$",   # Value Labels
+    is   = "^is.csv$"    # Question and Variable Labels
+  )
+
+  meta_files_long <- c(
+    vp   = "^visitplan_.*\\.csv$",
+    vpfs = "^visitplanforms_.*\\.csv$",
+    fs   = "^forms_.*\\.csv$",
+    qs   = "^questions_.*\\.csv$",
+    cl   = "^cl_.*\\.csv$",
+    is   = "^items_.*\\.csv$"
   )
 
   # Check if data_dir is an existing zip file or directory.
@@ -112,15 +121,29 @@ read_metadata <- function(data_dir,
   is_dir <- dir.exists(data_dir)
 
   if (is_zip) {
-    read_files <- utils::unzip(data_dir, list = TRUE)$Name %>% intersect(meta_files)
+    read_files <- utils::unzip(data_dir, list = TRUE)$Name %>%
+      str_subset(paste0(c(meta_files_long, meta_files_short), collapse = "|"))
   } else if (is_dir) {
-    read_files <- list.files(data_dir, pattern = "*.csv") %>% intersect(meta_files)
+    read_files <- list.files(data_dir, pattern = "*.csv") %>%
+      str_subset(paste0(c(meta_files_long, meta_files_short), collapse = "|"))
   } else {
     stop(paste("no zip file or directory found:", data_dir))
   }
 
+  # check if the files are in the long or short name format
+  if (some(meta_files_long, ~ any(str_detect(read_files, .)))) {
+    meta_files <- meta_files_long
+  } else if (some(meta_files_short, ~ any(str_detect(read_files, .)))) {
+    meta_files <- meta_files_short
+  } else {
+    stop("The directory or zip does not contain any SecuTrial meta data files.")
+  }
+
   # check if all needed files are included in the (zip) directory.
-  missing_files <- setdiff(meta_files, read_files)
+  missing_files <- meta_files %>%
+    discard(~ any(str_detect(read_files, .))) %>%
+    str_remove_all("\\^|\\$|_\\.|\\\\")
+
   if (length(missing_files > 0)) {
     stop(paste(
       "Can not load all required meta data files. The following files are missing:",
@@ -130,7 +153,9 @@ read_metadata <- function(data_dir,
   }
 
   # Read meta data files from Secutrial or tsExport
-  meta_files %>%
+  meta_files_read <- map(meta_files, ~ str_subset(read_files, .))
+
+  meta_files_read %>%
     map(~ {
       print(paste("Read:", .x))
       read_meta_file(data_dir, .x, delim, decimal_mark, encoding, is_zip)

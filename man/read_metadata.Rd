@@ -25,12 +25,12 @@ directory or zip file.
 \description{
 Read the following csv files from the export directory or zip file:
 \itemize{
-\item vp.csv
-\item vpfs.csv
-\item fs.csv
-\item qs.csv
-\item cl.csv
-\item is.csv
+\item vp.csv or visitplan*.csv
+\item vpfs.csv or visitplanforms*.csv
+\item fs.csv or forms*.csv
+\item qs.csv or questions*.csv
+\item cl.csv or cl*.csv
+\item is.csv or items*.csv
 }
 
 If one of this files isn't present in the data directory, the function exits
