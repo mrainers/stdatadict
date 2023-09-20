@@ -1,3 +1,15 @@
+#' stdatadict Environment For Intermediate Calculation Results
+#'
+#' List the objects currently stored inside this environment:
+#'     `s(stdatadict::intermediates, all.names = TRUE)`
+#' Access object from this environment:
+#'     `stdatadict::intermediates$<ObjName>`
+#' @export
+intermediates <- new.env(parent = emptyenv())
+
+
+### UTILS ----------------------------------------------------------------------
+
 #' Get Study ID
 #'
 #' Extract the study id used in the meta data from the formtable names column.
@@ -9,7 +21,7 @@
 #'
 #' @return single character string of the studyid that is used in the meta data.
 #' @noRd
-get_study_id <- function(data) {
+get_studyid <- function(data) {
   # check if the variable formtablename is in the data
   if (!("formtablename" %in% names(data))) {
     stop("No Variable named \"formtablename\" in data")
@@ -35,3 +47,313 @@ get_study_id <- function(data) {
 
   studyid
 }
+
+#' Get Secutrials Forms Order
+#'
+#' Get the order of the main forms how they appear in the "Datensatztabelle" and
+#' should also should kept for the DataDictionary. This can be applied after
+#' some data wrangling that destroys the original formorder.
+#'
+#' @param forms the refined fs dataset from secutrials meta data
+#' @noRd
+get_formorder <- function(forms) {
+  forms %>%
+    filter(!.data$is_subform) %>%
+    distinct(.data$formtablename)
+}
+
+### REFINE META DATA TABLES ----------------------------------------------------
+
+#'  Prepare vp/visitplan Table For Further Data Dictionary Calculation Steps.
+#'
+#' The preparation procedure includes the following steps:
+#' - Entries from older study versions are removed.
+#' - not needed variables are removed.
+#'
+#' @param vp table from secutrial metadata
+#'
+#' @return tibble with cleaned visit data
+#' @noRd
+refine_vp <- function(vp) {
+  # Retrieve visit structure information
+  vp %>%
+    mutate(mnpvsno = replace_na(as.numeric(.data$mnpvsno), -1)) %>%
+    filter(.data$mnpvsno == max(.data$mnpvsno)) %>%
+    select("mnpvisid", "mnpvislabel", "hidden")
+}
+
+
+#' Prepare forms/fs Table For Further Data Dictionary Calculation Steps.
+#'
+#' The preparation procedure includes the following steps:
+#' - Entries from older study versions are removed.
+#' - a boolean indicator variable if a form is a subform is added.
+#' - a variable that estimates the form type (visit, casenode, subform) is added.
+#' - formtablename entries are cleared from the '(e)mnp<studyid>' string.
+#'
+#' @param fs table from secutrial metadata
+#' @param vpfs table from secutrial metadata
+#' @param studyid character string extracted from 'formtablename' variable that
+#'     is the study name in the secutrial setup and a common string in all
+#'     formtablenames that needs to be removed.
+#'
+#' @return tibble with cleaned fs data
+#' @noRd
+refine_fs <- function(fs, vpfs, studyid) {
+  fs %>%
+    mutate(mnpvsno = replace_na(as.numeric(.data$mnpvsno), -1)) %>%
+    filter(.data$mnpvsno == max(.data$mnpvsno)) %>%
+    mutate(is_subform = str_detect(.data$formtablename, "^emnp")) %>%
+    mutate(formtablename = str_remove(.data$formtablename, str_c("mnp", studyid))) %>%
+    mutate(formtype = dplyr::case_when(
+      formid %in% vpfs$formid ~ "visit",
+      .data$is_subform ~ "subform",
+      TRUE ~ "casenode"
+    )) %>%
+    # hidden visit forms are not in the visitplanforms (vpfs), so they are falsely
+    # identified as casenode forms. However regular casenode forms appear at the
+    # very end of the forms list. So if a hidden 'casenode' form is followed by
+    # other visit forms, then we know it is truly a hidden visit form.
+    mutate(
+      last_formvisit_row = max(if_else(.data$formtype == "visit", dplyr::row_number(), 0)),
+      formtype = if_else(
+        .data$formtype == "casenode" & dplyr::row_number() < .data$last_formvisit_row,
+        "visit", .data$formtype
+      )
+    ) %>%
+    select(-"last_formvisit_row")
+}
+
+#' Prepare questions/qs Table For Further Data Dictionary Calculation Steps.
+#'
+#' The preparation procedure includes the following steps:
+#' - Entries from older study versions are removed.
+#' - a variable that holds the original question order is added.
+#' - (sub)formtablename entries are cleared from the '(e)mnp<studyid>' string.
+#'
+#' @param qs table from secutrial metadata
+#' @param studyid character string extracted from 'formtablename' variable that
+#'     is the study name in the secutrial setup and a common string in all
+#'     formtablenames that needs to be removed.
+#'
+#' @return tibble with cleaned qs data
+#' @noRd
+refine_qs <- function(qs, studyid) {
+  qs %>%
+    mutate(order = dplyr::row_number()) %>%
+    group_by(.data$formtablename) %>%
+    dplyr::slice_min(.data$formid) %>%
+    ungroup() %>%
+    arrange(.data$order) %>%
+    mutate(
+      formtablename = str_remove(.data$formtablename, str_c("mnp", studyid)),
+      subformtablename = str_remove(.data$subformtablename, str_c("mnp", studyid))
+    )
+}
+
+#' Prepare items/is Table For Further Data Dictionary Calculation Steps.
+#'
+#' The preparation procedure includes the following steps:
+#' - Entries from older study versions are removed.
+#' - a variable that holds the original question order is added.
+#'
+#' @param is table from secutrial metadata
+#' @param questions refined qs table from secutrial metadata
+#'
+#' @return tibble with cleaned items data
+#' @noRd
+refine_is <- function(is, questions) {
+  is %>%
+    filter(!is.na(.data$ffcolname)) %>%
+    mutate(order = dplyr::row_number()) %>%
+    arrange(.data$order) %>%
+    # this removes items from older study versions
+    dplyr::semi_join(questions, by = "fgid")
+
+}
+
+
+#' Prepare cl (Variable Labels) Table For Further Data Dictionary Calculation Steps.
+#'
+#' The preparation procedure includes the following steps:
+#' - Entries that are not actual variable labels are removed.
+#' - formtable names are cleaned from "mnp<studyid>" strings.
+#' - item identifiers are split into tablename and varname variables.
+#' - all value codes and labels of one item are collapsed into a single string (row)
+#'
+#' @param cl table from secutrial metadata
+#' @param studyid character string extracted from 'formtablename' variable that
+#'     is the study name in the secutrial setup and a common string in all
+#'     formtablenames that needs to be removed.
+#'
+#' @return tibble with item identifiers and combined item labels
+#' @noRd
+refine_cl <- function(cl, studyid) {
+  cl %>%
+    filter(str_detect(.data$column, str_c("mnp", studyid))) %>%
+    mutate(column = str_remove(.data$column, str_c("mnp", studyid))) %>%
+    mutate(
+      tablename = str_extract(.data$column, "^[^\\.]*") %>%
+        str_remove(str_c("mnp", studyid)),
+      varname = str_extract(.data$column, "[^\\.]*$")
+    ) %>%
+    mutate(vallab = str_c(.data$code, " = ", .data$value)) %>%
+    # order values (negative values at the end)
+    mutate(
+      positive = .data$code >= 0,
+      abscode = abs(.data$code)
+    ) %>%
+    arrange(
+      .data$tablename, .data$varname, dplyr::desc(.data$positive),
+      .data$abscode
+    ) %>%
+    group_by(.data$tablename, .data$varname) %>%
+    summarise(vallabs = str_c(.data$vallab, collapse = ", ")) %>%
+    ungroup()
+}
+
+
+### CREATE DATADICT TABLES -----------------------------------------------------
+
+#' Create Visit Form Table
+#'
+#' @param forms the refined "fs" data table from the secutrial export
+#' @param visits the refined "vp" data table from the secutrial export
+#' @param vpfs the "vpfs" data table from the secutrial export
+#'
+#' @return tibble that consists of all visit forms/tables (rows) and
+#' visit names (colums).
+#' An 'X' in the cells marks, which forms are available at which visits.
+#' @noRd
+create_visitforms <- function(forms, visits, vpfs) {
+  forms %>%
+    filter(.data$formtype == "visit") %>%
+    left_join(vpfs %>% select(-any_of("hidden")), by = "formid") %>%
+    left_join(visits %>% select(-"hidden"), by = "mnpvisid") %>%
+    mutate(dummy = "X") %>%
+    tidyr::pivot_wider(
+      id_cols = c("formtablename", "formname", "hidden"),
+      names_from = "mnpvislabel",
+      values_from = "dummy"
+    ) %>%
+    select(-"NA")
+}
+
+#' Create Table of Casenode Forms
+#'
+#' @param forms the refined "fs" data table from the secutrial export
+#'
+#' @return tibble that lists all casenode forms
+#' An 'X' in the cells marks, which forms are available at which visits.
+#' @noRd
+create_casenodeforms <- function(forms) {
+forms %>%
+  filter(.data$formtype == "casenode") %>%
+  select("formtablename", "formname", "hidden")
+}
+
+#' Create Table of Subforms
+#'
+#' @param questions the refined "qs" data table from secutrial export
+#'
+#' @return tibble that lists all main forms, that contain sub forms and which
+#' sub form those main forms include.
+#' @noRd
+create_subforms <- function(questions) {
+  questions %>%
+    filter(!is.na(.data$subformtablename)) %>%
+    select(`Form` = "formtablename",
+           `Form Name` = "formname",
+           `Sub Form Table` = "subformtablename",
+           `Sub Form Name` = "fglabel",
+           "hidden")
+}
+
+### MAIN -----------------------------------------------------------------------
+
+
+#' Create Data Dictionary Tables
+#'
+#' Create the following tables for use in the data dictionary file:
+#' - visit form overview
+#' - casenode forms overview
+#' - subform (repetition table) overview
+#' - itemtables for each form
+#'
+#' All interim calculations such as the refined meta data tables or the
+#' extracted study id are saved into the [intermediates] environment of this
+#' package. Type:
+#'    `s(stdatadict::intermediates, all.names = TRUE)`
+#' to get a list of all objects stored in this environment.
+#' Access object from this environment:
+#' `stdatadict::intermediates$<ObjName>`.
+#'
+#' @param st_metadata list of dataset that contains the secutrial meta data
+#'     tables.
+#'
+#' @return nested list of tibbles with the following structure:
+#'     $ form_overview
+#'      ...$ visit_forms
+#'      ...$ casenode_forms
+#'      ...$ sub_forms
+#'     $ form_items
+#'      ...$ <form1>
+#'      ...$ <form2>
+#'      ...
+#' @export
+#'
+#' @examplesIf interactive()
+#' datadict_raw <- create_datadict_tables(st_metadata)
+create_datadict_tables <- function(st_metadata) {
+  datadict_tables <- list()
+
+  # TODO: add needed metadata if data is exported without the
+  # "Dupliziere Formular-Metadaten in alle Tabellen" option.
+
+  # extract study id from forms
+  studyid <- get_studyid(st_metadata$fs)
+  intermediates$studyid <- studyid
+
+  # refine metadata
+  visits <- refine_vp(st_metadata$vp)
+  intermediates$visits <- visits
+
+  forms <- refine_fs(st_metadata$fs, st_metadata$vpfs, studyid)
+  intermediates$forms <- forms
+
+  questions <- refine_qs(st_metadata$qs, studyid)
+  intermediates$questions <- questions
+
+  items <- refine_is(st_metadata$is, questions)
+  intermediates$items <- items
+
+  vallabs <- refine_cl(st_metadata$cl, studyid)
+  intermediates$vallabs <- vallabs
+
+
+  # store the order of the major forms (without the subforms)
+  form_order <- get_formorder(forms)
+  intermediates$form_order <- form_order
+
+  # create form overview tables
+  visit_forms <- create_visitforms(forms, visits, st_metadata$vpfs)
+  intermediates$visit_forms <- visit_forms
+  datadict_tables$form_overview$visit_forms<- visit_forms
+
+  casenode_forms <- create_casenodeforms(forms)
+  intermediates$casenode_forms <- casenode_forms
+  datadict_tables$form_overview$casenode_forms <- casenode_forms
+
+  sub_forms <- create_subforms(questions)
+  intermediates$sub_forms <- sub_forms
+  datadict_tables$form_overview$sub_forms <- sub_forms
+
+  datadict_tables
+}
+
+
+
+
+
+
+

@@ -94,7 +94,7 @@ read_meta_file <- function(data_dir, file_name,
 #'
 #' @examplesIf interactive()
 #' data_dir <- file.choose()
-#' metadata <- read_metadata(data_dir)
+#' st_metadata <- read_metadata(data_dir)
 read_metadata <- function(data_dir,
                           delim = ";", decimal_mark = ",",
                           encoding = "UTF-8") {

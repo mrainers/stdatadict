@@ -43,6 +43,6 @@ column to be present.
 \examples{
 \dontshow{if (interactive()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 data_dir <- file.choose()
-metadata <- read_metadata(data_dir)
+st_metadata <- read_metadata(data_dir)
 \dontshow{\}) # examplesIf}
 }
