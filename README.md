@@ -30,4 +30,4 @@ library(stdatadict)
 
 ## License
 
-MIT License Copyright (c) 2023 stDataDict authors
+MIT License Copyright (c) 2023 stdatadict authors

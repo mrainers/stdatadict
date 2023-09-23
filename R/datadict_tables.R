@@ -139,6 +139,7 @@ refine_fs <- function(fs, vpfs, studyid) {
 #' @return tibble with cleaned qs data
 #' @noRd
 refine_qs <- function(qs, studyid) {
+  # TODO: deal with corrupt hidden column (Secutrial Bug 2023)
   qs %>%
     mutate(order = dplyr::row_number()) %>%
     group_by(.data$formtablename) %>%
@@ -236,7 +237,11 @@ create_visitforms <- function(forms, visits, vpfs) {
       names_from = "mnpvislabel",
       values_from = "dummy"
     ) %>%
-    select(-"NA")
+    select(-"NA") %>%
+    mutate(across(4:last_col(), replace_na, "-")) %>%
+    rename(!!stdatadictEnv$i18n_dd$t("table_col")   := "formtablename",
+           !!stdatadictEnv$i18n_dd$t("formname_col") := "formname"
+           )
 }
 
 #' Create Table of Casenode Forms
@@ -247,9 +252,12 @@ create_visitforms <- function(forms, visits, vpfs) {
 #' An 'X' in the cells marks, which forms are available at which visits.
 #' @noRd
 create_casenodeforms <- function(forms) {
-forms %>%
-  filter(.data$formtype == "casenode") %>%
-  select("formtablename", "formname", "hidden")
+  forms %>%
+    filter(.data$formtype == "casenode") %>%
+    select("formtablename", "formname", "hidden") %>%
+    rename(!!stdatadictEnv$i18n_dd$t("table_col")    := "formtablename",
+           !!stdatadictEnv$i18n_dd$t("formname_col") := "formname"
+    )
 }
 
 #' Create Table of Subforms
@@ -262,11 +270,13 @@ forms %>%
 create_subforms <- function(questions) {
   questions %>%
     filter(!is.na(.data$subformtablename)) %>%
-    select(`Form` = "formtablename",
-           `Form Name` = "formname",
-           `Sub Form Table` = "subformtablename",
-           `Sub Form Name` = "fglabel",
-           "hidden")
+    select(
+      !!stdatadictEnv$i18n_dd$t("mainform_col")      := "formtablename",
+      !!stdatadictEnv$i18n_dd$t("formname_col")      := "formname",
+      !!stdatadictEnv$i18n_dd$t("subform_table_col") := "subformtablename",
+      !!stdatadictEnv$i18n_dd$t("subform_name_col")  := "fglabel",
+           "hidden"
+    )
 }
 
 ### MAIN -----------------------------------------------------------------------
@@ -350,10 +360,4 @@ create_datadict_tables <- function(st_metadata) {
 
   datadict_tables
 }
-
-
-
-
-
-
 
