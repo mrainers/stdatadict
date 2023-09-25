@@ -55,6 +55,8 @@ get_studyid <- function(data) {
 #' some data wrangling that destroys the original formorder.
 #'
 #' @param forms the refined fs dataset from secutrials meta data
+#'
+#' @return tibble with column "formtablename" sorted in it's original order.
 #' @noRd
 get_formorder <- function(forms) {
   forms %>%
@@ -147,6 +149,7 @@ refine_qs <- function(qs, studyid) {
     ungroup() %>%
     arrange(.data$order) %>%
     mutate(
+      is_subform = str_detect(.data$formtablename, "^emnp"),
       formtablename = str_remove(.data$formtablename, str_c("mnp", studyid)),
       subformtablename = str_remove(.data$subformtablename, str_c("mnp", studyid))
     )
@@ -237,7 +240,7 @@ create_visitforms <- function(forms, visits, vpfs) {
       names_from = "mnpvislabel",
       values_from = "dummy"
     ) %>%
-    select(-"NA") %>%
+    select(-any_of("NA")) %>%
     mutate(across(4:last_col(), replace_na, "-")) %>%
     rename(!!stdatadictEnv$i18n_dd$t("table_col")   := "formtablename",
            !!stdatadictEnv$i18n_dd$t("formname_col") := "formname"
@@ -277,6 +280,81 @@ create_subforms <- function(questions) {
       !!stdatadictEnv$i18n_dd$t("subform_name_col")  := "fglabel",
            "hidden"
     )
+}
+
+
+#' Create Tables of form items
+#'
+#' @param questions the refined "qs" data table from secutrial export
+#' @param items the refined "is" data table from secutrial export
+#' @param vallabs the refined "cl" data table from secutrial export
+#' @param form_order tibble with column "formtablename" sorted in it's original
+#'     order.
+#'
+#' @return list of tibbles that represent a form with their containing
+#'     variables, each.
+#' @noRd
+create_formitems <- function(questions, items, vallabs, form_order) {
+  # only mainform questions
+  mainform_questions <- questions %>%
+    filter(!.data$is_subform)
+
+  # only subform questions
+  subform_questions <- questions %>%
+    filter(.data$is_subform) %>%
+    arrange(.data$formtablename, .data$sequence)
+
+  # substitute rows that marks the placement of a subtable (the column
+  # subformtablename holds the name of the subform), with the corresponding
+  # subform questions
+
+  questions_substited <- mainform_questions %>%
+    left_join(subform_questions,
+      by = c("subformtablename" = "formtablename"),
+      relationship = "many-to-many"
+    ) %>%
+    mutate(
+      across(
+        ends_with(".x"),
+        ~ coalesce(get(str_replace(dplyr::cur_column(), ".x", ".y")), .),
+        .names = "{str_remove(.col, '.x')}"
+      )
+    ) %>%
+    select(-ends_with(".x"), -ends_with(".y")) %>%
+    mutate(
+      mainform = .data$formtablename,
+      formtablename = coalesce(.data$subformtablename, .data$formtablename)
+    ) %>%
+    relocate("mainform")
+
+
+  # table with all questions and their items and properties
+  formitems_combined <- questions_substited %>%
+    select("fgid", "mainform", "formtablename", "fglabel") %>%
+    inner_join(
+      items %>%
+        select("fgid", "fflabel", "ffcolname", "itemtype", "hidden"),
+      by = "fgid",
+      relationship = "many-to-many"
+    ) %>%
+    select(-"fgid") %>%
+    left_join(vallabs,
+      by = c("formtablename" = "tablename", "ffcolname" = "varname")
+    ) %>%
+    rename(
+      !!stdatadictEnv$i18n_dd$t("table_col") := "formtablename",
+      !!stdatadictEnv$i18n_dd$t("question_col") := "fglabel",
+      !!stdatadictEnv$i18n_dd$t("varlab_col") := "fflabel",
+      !!stdatadictEnv$i18n_dd$t("varname_col") := "ffcolname",
+      !!stdatadictEnv$i18n_dd$t("vartype_col") := "itemtype",
+      !!stdatadictEnv$i18n_dd$t("values_col") := "vallabs"
+    )
+
+  # split by mainform
+  formitems_combined %>%
+    dplyr::nest_by(.data$mainform) %>%
+    arrange(match(.data$mainform, form_order$formtablename)) %>%
+    tibble::deframe()
 }
 
 ### MAIN -----------------------------------------------------------------------
@@ -357,6 +435,9 @@ create_datadict_tables <- function(st_metadata) {
   sub_forms <- create_subforms(questions)
   intermediates$sub_forms <- sub_forms
   datadict_tables$form_overview$sub_forms <- sub_forms
+
+  form_items <- create_formitems(questions, items, vallabs, form_order)
+  datadict_tables$form_items <- form_items
 
   datadict_tables
 }

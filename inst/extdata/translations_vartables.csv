@@ -11,6 +11,6 @@
 "question_col","Question","Frage"
 "varlab_col","Variable Label","Variablenlabel"
 "varname_col","Variable Name","Variablenname"
-"type_col","Type","Variablentyp"
+"vartype_col","Type","Variablentyp"
 "values_col","Values","Werte"
 "test","test one, two, three","Test eins, zwei, drei"
