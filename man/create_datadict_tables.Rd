@@ -4,22 +4,31 @@
 \alias{create_datadict_tables}
 \title{Create Data Dictionary Tables}
 \usage{
-create_datadict_tables(st_metadata)
+create_datadict_tables(st_metadata, ...)
 }
 \arguments{
 \item{st_metadata}{list of dataset that contains the secutrial meta data
 tables.}
+
+\item{...}{<\code{\link[rlang:dyn-dots]{dynamic-dots}}> additional options to pass to
+internal functions.\if{html}{\out{<br>}}
+- \code{invert_hidden} Boolean, define if the "hidden" variable in the
+question/qs file is inverted by a secutrial bug.\if{html}{\out{<br>}}
+If this option is omitted, this function assumes that the bug is active
+when more than 70\% of all questions are marked as hidden.}
 }
 \value{
 nested list of tibbles with the following structure:
-$ form_overview
-...$ visit_forms
-...$ casenode_forms
-...$ sub_forms
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{$ form_overview
+ ...$ visit_forms
+ ...$ casenode_forms
+ ...$ sub_forms
 $ form_items
-...$ \if{html}{\out{<form1>}}
-...$ \if{html}{\out{<form2>}}
-...
+ ...$ <form1>
+ ...$ <form2>
+ ...
+}\if{html}{\out{</div>}}
 }
 \description{
 Create the following tables for use in the data dictionary file:

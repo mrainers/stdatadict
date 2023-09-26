@@ -137,11 +137,32 @@ refine_fs <- function(fs, vpfs, studyid) {
 #' @param studyid character string extracted from 'formtablename' variable that
 #'     is the study name in the secutrial setup and a common string in all
 #'     formtablenames that needs to be removed.
+#' @param invert_hidden Boolean is the hidden variable inverted? In 2023
+#'    secutrial created a bug that inverts the hidden variable in the
+#'    qs/question table. If invert_hidden = NULL (default), then the function
+#'    will assume that the hidden variable is inverted if more than 70% of all
+#'    entries are 1 = hidden.
 #'
 #' @return tibble with cleaned qs data
 #' @noRd
-refine_qs <- function(qs, studyid) {
-  # TODO: deal with corrupt hidden column (Secutrial Bug 2023)
+refine_qs <- function(qs, studyid, invert_hidden = NULL) {
+  if (is.null(invert_hidden)) {
+    # assume that the hidden variable is inverted, if more than 70% of all
+    # questions are hidden.
+    hidden_pct <- 100 * sum(qs$hidden, na.rm = TRUE) / length(qs$hidden)
+    invert_hidden <- hidden_pct > 70
+    if (invert_hidden) {
+      message(paste0(
+        round(hidden_pct, digits = 1), "% of the questions are marked as hidden.\n",
+        "It seems that the hidden variable is inverted by a secutrial bug.\n",
+        "-> The hidden variable will be reverted for the data dictionary."
+        ))
+    }
+  }
+
+  # invert hidden variable if necessary.
+  if (invert_hidden) qs$hidden <- dplyr::if_else(qs$hidden == 1, NA, 1, 1)
+
   qs %>%
     mutate(order = dplyr::row_number()) %>%
     group_by(.data$formtablename) %>%
@@ -378,8 +399,15 @@ create_formitems <- function(questions, items, vallabs, form_order) {
 #'
 #' @param st_metadata list of dataset that contains the secutrial meta data
 #'     tables.
+#' @param ... <[`dynamic-dots`][rlang::dyn-dots]> additional options to pass to
+#'     internal functions.<br>
+#'     - `invert_hidden` Boolean, define if the "hidden" variable in the
+#'       question/qs file is inverted by a secutrial bug.<br>
+#'       If this option is omitted, this function assumes that the bug is active
+#'       when more than 70% of all questions are marked as hidden.
 #'
 #' @return nested list of tibbles with the following structure:
+#'
 #'     $ form_overview
 #'      ...$ visit_forms
 #'      ...$ casenode_forms
@@ -392,10 +420,12 @@ create_formitems <- function(questions, items, vallabs, form_order) {
 #'
 #' @examplesIf interactive()
 #' datadict_raw <- create_datadict_tables(st_metadata)
-create_datadict_tables <- function(st_metadata) {
+create_datadict_tables <- function(st_metadata, ...) {
+  invert_hidden = list(...)$invert_hidden
+
   datadict_tables <- list()
 
-  # TODO: add needed metadata if data is exported without the
+  # TODO: check if all needed metadata is in the tables if data is exported without the
   # "Dupliziere Formular-Metadaten in alle Tabellen" option.
 
   # extract study id from forms
@@ -409,7 +439,7 @@ create_datadict_tables <- function(st_metadata) {
   forms <- refine_fs(st_metadata$fs, st_metadata$vpfs, studyid)
   intermediates$forms <- forms
 
-  questions <- refine_qs(st_metadata$qs, studyid)
+  questions <- refine_qs(st_metadata$qs, studyid, invert_hidden)
   intermediates$questions <- questions
 
   items <- refine_is(st_metadata$is, questions)
@@ -441,4 +471,3 @@ create_datadict_tables <- function(st_metadata) {
 
   datadict_tables
 }
-
