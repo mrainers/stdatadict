@@ -16,6 +16,7 @@ Imports:
     dplyr,
     jsonlite,
     magrittr,
+    openxlsx2,
     purrr,
     readr,
     rlang,
