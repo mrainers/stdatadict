@@ -26,4 +26,13 @@ stdatadictEnv <- new_environment(list(
     translation_json_path = stdatadictEnv$transl_jsonfile
   )
   stdatadictEnv$i18n_dd$set_translation_language(stdatadictEnv$language)
+
+  # create list of all package color themes
+  stdatadictEnv$color_themes <- list(
+    purpur = purpur,
+    no_colors = no_colors,
+    no_colours = no_colors
+  )
+
+  stdatadictEnv$use_color_theme <- "purpur"
 }

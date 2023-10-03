@@ -48,3 +48,6 @@
 #' @importFrom withr local_options
 ## usethis namespace: end
 NULL
+
+# get rid of note: no visible binding for global variable '.'
+if(getRversion() >= "2.15.1")  utils::globalVariables(c("."))
