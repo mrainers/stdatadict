@@ -345,7 +345,7 @@ add_form_overview <- function(wb,
 
   # section title
   wb$add_data(
-    x = stdatadictEnv$i18n_dd$t("casenode_forms_subsection"),
+    x = stdatadictEnv$i18n_dd$t("subforms_subsection"),
     dims = str_glue("A{row_idx}")
   )
 
@@ -358,7 +358,7 @@ add_form_overview <- function(wb,
 
   row_idx <- row_idx + 2
 
-  # # casenode forms table
+  # subforms table
   data <- datadict_tables$form_overview$sub_forms %>%
     select(-"hidden")
 

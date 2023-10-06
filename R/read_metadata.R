@@ -1,8 +1,58 @@
+#' Get The Creation Date Time Of The Data Export Directory
+#'
+#' This function tries to extract the data creation date time from the
+#' ExportOptions file that is exported with the data.
+#' However if due to some processing steps or other reasons there is no
+#' ExportOptions file found in the data directory, then return the
+#' modification time of the data directory
+#'
+#' @param data_dir Name of the Directory or Zip File in which the SecuTrial or
+#'     tsExport data is stored.
+#' @param is_zip (logical) is files directory a zip file?
+#'
+#' @return (POSIXt)
+#' @keywords internal
+get_export_date <- function(data_dir, is_zip = FALSE) {
+  export_options <- NULL
+
+  # try to read a export options file
+  if (is_zip) {
+    export_option_file <- utils::unzip(data_dir, list = TRUE)$Name %>%
+      str_subset("^ExportOptions_\\w+.html$")
+
+    if (export_option_file > 0) {
+      export_options <- unz(data_dir, export_option_file) %>%
+        readr::read_lines()
+    }
+  } else {
+    export_option_file <- list.files(data_dir,
+                                     pattern = "^ExportOptions_\\w+.html$",
+                                     full.names = TRUE)
+
+    if (export_option_file > 0) {
+      export_options <- readr::read_lines(export_option_file)
+    }
+  }
+
+  # if an export option file is in the data directory get the creation date time
+  # from that file.
+  # if not, take the mdate from the data directory
+  if (!is.null(export_options)) {
+    export_options %>%
+      stringr::str_which("Erstellungsdatum|Created on") %>%
+      {export_options[. + 2]} %>%
+      stringr::str_extract("(<b>)(.*)(</b>)", group = 2) %>%
+      as.POSIXlt(format = "%d.%m.%Y - %H:%M:%S")
+  } else {
+     file.mtime(data_dir)
+  }
+}
+
 #' Read A Single Meta Data File From A SecuTrial Export Directory
 #'
 #' @inheritParams read_metadata
 #' @param file_name Name of the csv file that should be read.
-#' @param is_zip Boolean if the files directory is actually a zip file.
+#' @param is_zip (logical) is files directory a zip file?
 #'
 #' @return the csv data read from the file as tibble. If necessary a "hidden"
 #'    column is added to certain files that are expected to have one.
@@ -155,12 +205,16 @@ read_metadata <- function(data_dir,
   # Read meta data files from Secutrial or tsExport
   meta_files_read <- map(meta_files, ~ str_subset(read_files, .))
 
-  meta_files_read %>%
+  st_metadata <- meta_files_read %>%
     map(~ {
       cat(paste("\nRead:", .x))
       read_meta_file(data_dir, .x, delim, decimal_mark, encoding, is_zip)
     })
-}
 
-# TODO: add function to calculate data creation date, based on html file or
-# cdate/mdate?
+  st_metadata <- append(st_metadata,
+                        list(export_date = get_export_date(data_dir, is_zip)),
+                        after = 0
+                        )
+
+  st_metadata
+}
