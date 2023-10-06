@@ -161,3 +161,6 @@ read_metadata <- function(data_dir,
       read_meta_file(data_dir, .x, delim, decimal_mark, encoding, is_zip)
     })
 }
+
+# TODO: add function to calculate data creation date, based on html file or
+# cdate/mdate?

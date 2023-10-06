@@ -8,7 +8,7 @@ stdatadictEnv <- new_environment(list(
 
   stdatadictEnv$transl_table <- read_csv(
     system.file("extdata", "translations_vartables.csv", package = "stdatadict"),
-    col_types = readr::cols()
+    show_col_types = FALSE
   )
 
   stdatadictEnv$available_languages <- names(stdatadictEnv$transl_table) %>%

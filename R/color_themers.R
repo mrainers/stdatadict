@@ -49,7 +49,7 @@ tint_color <- function(color, tint) {
     grDevices::col2rgb() %>%
     .[,1] %>%
     map(~ round(.x + abs((tint > 0) * 255 - .x) * tint)) %>%
-    {do.call(grDevices::rgb, args = c(. , maxColorValue = 255))}
+    rlang::exec(grDevices::rgb, !!!., maxColorValue = 255)
 }
 
 
