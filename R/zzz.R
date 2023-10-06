@@ -29,9 +29,12 @@ stdatadictEnv <- new_environment(list(
 
   # create list of all package color themes
   stdatadictEnv$color_themes <- list(
-    purpur = purpur,
+    aquamarin = aquamarin,
+    dzhk = dzhk,
+    napkon = napkon,
     no_colors = no_colors,
-    no_colours = no_colors
+    no_colours = no_colors,
+    purpur = purpur
   )
 
   stdatadictEnv$use_color_theme <- "purpur"

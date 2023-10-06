@@ -135,7 +135,7 @@ style_datadict <- function(wb, theme_name = stdatadictEnv$use_color_theme) {
     ))
 
   cell_style_options_b <- list(
-    title = list(indent = 1),
+    title = list(indent = 1, vertical = "center"),
     subtitle = list(indent = 1),
     as_of_date = list(indent = 1),
     heading_1 = list(horizontal = "center"),
