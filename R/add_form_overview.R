@@ -38,7 +38,7 @@ add_form_overview <- function(wb,
   }
 
   # set column widths
-  wb$set_col_widths(cols = 1, widths = 21)
+  wb$set_col_widths(cols = 1, widths = 18)
   wb$set_col_widths(cols = 2, widths = 80)
   wb$set_col_widths(cols = 3:20, widths = 18)
 
@@ -127,7 +127,7 @@ add_form_overview <- function(wb,
     }
 
     test_two_rows <- function(text) {
-      if (round(nchar(text) * 0.86) > 21 + 80 + 18 * (col2int(doc_width) - 2)) {
+      if (round(nchar(text) * 0.86) > 18 + 80 + 18 * (col2int(doc_width) - 2)) {
         return(TRUE)
       } else {
         return(FALSE)
@@ -254,6 +254,7 @@ add_form_overview <- function(wb,
     horizontal = "center"
   )
 
+  # grey out hidden forms
   hidden <- datadict_tables$form_overview$visit_forms %>%
     select("hidden") %>%
     mutate(row_nr = dplyr::row_number()) %>%
