@@ -471,3 +471,75 @@ create_datadict_tables <- function(st_metadata, ...) {
 
   datadict_tables
 }
+
+#' Add Data To Form Item Tables
+#'
+#' @description
+#' Wrapper function to join a data set with the form item tables. It combines
+#' all tables in datadict_tables$form_items, and adds the additional data with
+#' dplyrs `inner_join()` function.
+#'
+#' `mainform` is the key variable to match by form name.
+#'
+#' Keep in mind that the variable names in the form item tables depend on the
+#' language settings of this package (Default is "en"). To be independent from
+#' the language setting rename your matching key variables as following before
+#' performing the join:
+#' `table_col` = Table,
+#' `question_col` = Question,
+#' `varlab_col` = "Variable Label",
+#' `varname_col` = "Variable Name",
+#' `vartype_col` = Type
+#'
+#' @param datadict_tables table list, generated with [create_datadict_tables()]
+#' @param data data frame to be joined with form_item tables of datadict_tables
+#' @param ... <[`dynamic-dots`][rlang::dyn-dots]> additional options to pass to
+#'     [dplyr::left_join()]
+#'
+#' @return datadict_tables with joined data to the form item tables
+#' @export
+#'
+#' @examples \dontrun{
+#' ## create example data for matching
+#' extra_data <- form_items %>%
+#'   tibble::enframe(name = "mainform") %>%
+#'   tidyr::unnest(cols = c(value)) %>%
+#'   select(
+#'     mainform,
+#'     table_col = Table,
+#'     varname_col = "Variable Name") %>%
+#'   # add random vargroups
+#'   mutate(var_group = sample(
+#'     x = c("one", "two", NA),
+#'     size = nrow(.),
+#'     replace = TRUE,
+#'     prob = c(0.2, 0.2, 0.6)
+#'   )) %>%
+#'   filter(!is.na(var_group))
+#'
+#' ## add "var_group" to form_items, match by mainform, table and varname
+#' datadict_tables <- join_with_form_items(datadict_tables, extra_data)
+#' }
+join_with_form_items <- function(datadict_tables, data, ...) {
+  # translate columns of data frame
+  data_transl <- data %>%
+    dplyr::rename_with(~ stdatadictEnv$i18n_dd$t(.x) %>% suppressWarnings(),
+      .cols = -"mainform"
+    )
+
+  # if the 'relationship' parameter is not set, set it to "many-to-one"
+  dots <- rlang::list2(...)
+  if (!("relationship" %in% names(dots))) {
+    dots$relationship <- "many-to-one"
+  }
+
+  # join form_items with data
+  datadict_tables$form_items <- datadict_tables$form_items %>%
+    tibble::enframe(name = "mainform") %>%
+    tidyr::unnest(cols = c("value")) %>%
+    rlang::exec("left_join", x = ., y = data_transl, !!!dots) %>%
+    dplyr::nest_by("mainform") %>%
+    tibble::deframe()
+
+  datadict_tables
+}

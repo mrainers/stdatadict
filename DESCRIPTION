@@ -16,7 +16,7 @@ Imports:
     dplyr,
     jsonlite,
     magrittr,
-    openxlsx2,
+    openxlsx2 (>= 1.0.0.9000),
     purrr,
     readr,
     rlang,
@@ -27,3 +27,5 @@ Imports:
     withr
 Suggests:
     kableExtra
+Remotes:  
+    JanMarvin/openxlsx2
