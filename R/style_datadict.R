@@ -154,7 +154,7 @@ style_datadict <- function(wb, theme_name = stdatadictEnv$use_color_theme) {
     form_sheet_table_col = list(
       fill_style = create_fill(
         patternType = "solid",
-        fgColor = wb_colour(color_theme$bg_color_tablecol_items)
+        fgColor = wb_color(color_theme$bg_color_tablecol_items)
       ),
       font_style = create_font(
         color = wb_color(color_theme$font_color_tablecol_items)

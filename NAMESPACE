@@ -2,6 +2,7 @@
 
 export(add_color_theme)
 export(add_form_overview)
+export(add_form_sheets)
 export(create_datadict_tables)
 export(get_color_theme)
 export(get_datadict_language)

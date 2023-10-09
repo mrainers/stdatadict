@@ -1,4 +1,27 @@
+#' Ceate And Add Form Sheets To The Data Dictionary
+#'
+#' @description
+#' Create a workbook sheet for every table in the datadict_tables$form_items
+#' list.
+#'
+#' The parameter "var_select" is ignored so far but in future release a 'select'
+#' column with selection rules will be added to the form sheet tables, if
+#' 'var_select' = TRUE
+#'
+#' @param wb a workbook
+#' @param datadict_tables generated with [create_datadict_tables()]
+#' @param var_select (logical) Is this a variable selection document?
+#'
+#' @return workbook with form item tables added (invisibly)
+#' @export
+#'
+#' @examples \dontrun{
+#' wb <- wb_workbook()
+#' add_form_overview(wb, datadict_tables = datadict_tables)
+#' add_form_sheets(wb, datadict_tables = datadict_tables)
+#' }
 add_form_sheets <- function(wb, datadict_tables, var_select = FALSE) {
+  var_select = FALSE # TODO: Remove when this variable will be used for ceating a var select column
 
   # check if styles are already registered, if not do so
   required_styles <- c(
@@ -24,7 +47,7 @@ add_form_sheets <- function(wb, datadict_tables, var_select = FALSE) {
 
   form_subtables <- datadict_tables$form_overview[[3]] %>%
     rename(formname = 3) %>%
-    summarise(subtables = paste(formname, collapse = ", "), .by = 1) %>%
+    summarise(subtables = paste(.data$formname, collapse = ", "), .by = 1) %>%
     tibble::deframe() %>%
     as.list()
 
@@ -164,6 +187,7 @@ add_form_sheets <- function(wb, datadict_tables, var_select = FALSE) {
         wb$set_col_widths(.y, cols = 6, widths = 60)
       })
 
+    invisible(wb)
 }
 
 
