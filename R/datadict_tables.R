@@ -42,8 +42,12 @@ get_studyid <- function(data) {
     studyid <- str_sub(studyid_formtablenames[[1]], 1, str_end)
     str_end <- str_end + 1
     id_new <- str_sub(studyid_formtablenames[[1]], 1, str_end)
+    # only allow letters and digits
+    if (str_detect(id_new, "[:^alnum:]$")) break
     id_not_found <- all(str_starts(studyid_formtablenames, id_new))
   }
+
+  message(paste("detected studyid:", studyid))
 
   studyid
 }
@@ -485,11 +489,11 @@ create_datadict_tables <- function(st_metadata, ...) {
 #' language settings of this package (Default is "en"). To be independent from
 #' the language setting rename your matching key variables as following before
 #' performing the join:
-#' `table_col` = Table,
-#' `question_col` = Question,
-#' `varlab_col` = "Variable Label",
-#' `varname_col` = "Variable Name",
-#' `vartype_col` = Type
+#' - `table_col` = Table,
+#' - `question_col` = Question,
+#' - `varlab_col` = "Variable Label",
+#' - `varname_col` = "Variable Name",
+#' - `vartype_col` = Type
 #'
 #' @param datadict_tables table list, generated with [create_datadict_tables()]
 #' @param data data frame to be joined with form_item tables of datadict_tables
@@ -524,7 +528,7 @@ join_with_form_items <- function(datadict_tables, data, ...) {
   # translate columns of data frame
   data_transl <- data %>%
     dplyr::rename_with(~ stdatadictEnv$i18n_dd$t(.x) %>% suppressWarnings(),
-      .cols = -"mainform"
+      .cols = -any_of("mainform")
     )
 
   # if the 'relationship' parameter is not set, set it to "many-to-one"
@@ -538,7 +542,7 @@ join_with_form_items <- function(datadict_tables, data, ...) {
     tibble::enframe(name = "mainform") %>%
     tidyr::unnest(cols = c("value")) %>%
     rlang::exec("left_join", x = ., y = data_transl, !!!dots) %>%
-    dplyr::nest_by("mainform") %>%
+    dplyr::nest_by(.data$mainform) %>%
     tibble::deframe()
 
   datadict_tables

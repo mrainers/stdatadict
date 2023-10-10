@@ -192,9 +192,10 @@ add_form_sheets <- function(wb, datadict_tables, var_select = FALSE) {
       )
 
       # set column width
+      wb$set_col_widths(.y, cols = 1:col2int(doc_width), widths = "auto")
       wb$set_col_widths(.y, cols = 1, widths = 18)
       wb$set_col_widths(.y, cols = 2:3, widths = 40)
-      wb$set_col_widths(.y, cols = 4:5, widths = "auto")
+      # wb$set_col_widths(.y, cols = 4:5, widths = "auto")
       wb$set_col_widths(.y, cols = 6, widths = 60)
     })
 

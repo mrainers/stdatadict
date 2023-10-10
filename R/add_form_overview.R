@@ -62,7 +62,7 @@ add_form_overview <- function(wb,
 
   # add subtitle
   if (!is.null(subtitle)) {
-    wb$add_data(x = subtitle, dims = str_glue("A{row_idx}"))
+    wb$add_data(x = as.character(subtitle), dims = str_glue("A{row_idx}"))
     wb$merge_cells(dims = str_glue("A{row_idx}:{doc_width}{row_idx}"))
     wb$set_cell_style(
       dims = str_glue("A{row_idx}"),

@@ -28,11 +28,13 @@ Keep in mind that the variable names in the form item tables depend on the
 language settings of this package (Default is "en"). To be independent from
 the language setting rename your matching key variables as following before
 performing the join:
-\code{table_col} = Table,
-\code{question_col} = Question,
-\code{varlab_col} = "Variable Label",
-\code{varname_col} = "Variable Name",
-\code{vartype_col} = Type
+\itemize{
+\item \code{table_col} = Table,
+\item \code{question_col} = Question,
+\item \code{varlab_col} = "Variable Label",
+\item \code{varname_col} = "Variable Name",
+\item \code{vartype_col} = Type
+}
 }
 \examples{
 \dontrun{

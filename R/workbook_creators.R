@@ -123,4 +123,36 @@ insert_worksheet <- function(wb, .after = 0, ...) {
   invisible(wb)
 }
 
-?wb_set_order()
+
+#' Create A data dictionary
+#'
+#' Wrapper function for creating a data dictionary. This function calls:
+#' [openxlsx2::wb_workbook()], [add_form_overview()] and [add_form_sheets()]
+#'
+#' @inheritParams add_form_overview
+#'
+#' @return An excel workbook
+#' @export
+#'
+#' @examples \dontrun{create_datadict(datadict_tables)}
+create_datadict <- function(datadict_tables,
+                            title = NULL,
+                            subtitle = NULL,
+                            as_of_date = NULL,
+                            form_type_description = TRUE,
+                            doc_width = "G") {
+  wb <- openxlsx2::wb_workbook()
+
+  add_form_overview(wb,
+                    datadict_tables = datadict_tables,
+                    title = title,
+                    subtitle = subtitle,
+                    as_of_date = as_of_date,
+                    form_type_description = form_type_description,
+                    doc_width = doc_width)
+
+  # this may take some seconds
+  add_form_sheets(wb, datadict_tables = datadict_tables)
+
+  wb
+}

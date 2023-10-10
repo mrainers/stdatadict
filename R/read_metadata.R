@@ -20,7 +20,7 @@ get_export_date <- function(data_dir, is_zip = FALSE) {
     export_option_file <- utils::unzip(data_dir, list = TRUE)$Name %>%
       str_subset("^ExportOptions_\\w+.html$")
 
-    if (export_option_file > 0) {
+    if (length(export_option_file) > 0) {
       export_options <- unz(data_dir, export_option_file) %>%
         readr::read_lines()
     }
@@ -29,7 +29,7 @@ get_export_date <- function(data_dir, is_zip = FALSE) {
                                      pattern = "^ExportOptions_\\w+.html$",
                                      full.names = TRUE)
 
-    if (export_option_file > 0) {
+    if (length(export_option_file) > 0) {
       export_options <- readr::read_lines(export_option_file)
     }
   }

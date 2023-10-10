@@ -25,7 +25,7 @@ if (!rlang::is_installed("remotes")) install.packages("remotes")
 
 ### Installation with install_gitlab()
 
-Install the `stdatadict` from gitlab and dependent packages.
+Install `stdatadict` from gitlab and dependent packages.
 ``` r
 library(remotes)
 
