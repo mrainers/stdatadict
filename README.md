@@ -28,6 +28,14 @@ Install the `remotes` package.
 if (!rlang::is_installed("remotes")) install.packages("remotes")
 ```
 
+Install the development version of `openxlsx2`.   
+*The current stable version on
+CRAN (version 1.0) has a critical bug that is fixed in the development version.*
+
+```r
+remotes::install_github("JanMarvin/openxlsx2")
+```
+
 ### Installation with install_gitlab()
 
 Install `stdatadict` from gitlab and dependent packages.
