@@ -17,12 +17,12 @@ style_datadict <- function(wb, theme_name = stdatadictEnv$use_color_theme) {
     title = list(
       fill_style = create_fill(
         patternType = "solid",
-        fgColor = wb_color(color_theme$bg_color_primary)
+        fgColor = wb_color(color_theme$bg_primary)
       ),
       font_style = create_font(
         sz = 36,
         b = TRUE,
-        color = wb_color(color_theme$font_color_primary),
+        color = wb_color(color_theme$font_primary),
       ),
       border_style = create_border()
     ),
@@ -30,12 +30,12 @@ style_datadict <- function(wb, theme_name = stdatadictEnv$use_color_theme) {
     subtitle = list(
       fill_style = create_fill(
         patternType = "solid",
-        fgColor = wb_color(color_theme$bg_color_subtitle)
+        fgColor = wb_color(color_theme$bg_subtitle)
       ),
       font_style = create_font(
         sz = 24,
         b = TRUE,
-        color = wb_color(color_theme$font_color_subtitle)
+        color = wb_color(color_theme$font_subtitle)
       ),
       border_style = create_border()
     ),
@@ -43,11 +43,11 @@ style_datadict <- function(wb, theme_name = stdatadictEnv$use_color_theme) {
     as_of_date = list(
       fill_style = create_fill(
         patternType = "solid",
-        fgColor = wb_color(color_theme$bg_color_subtitle)
+        fgColor = wb_color(color_theme$bg_subtitle)
       ),
       font_style = create_font(
         b = TRUE,
-        color = wb_color(color_theme$font_color_subtitle),
+        color = wb_color(color_theme$font_subtitle),
       ),
       border_style = create_border()
     ),
@@ -55,16 +55,16 @@ style_datadict <- function(wb, theme_name = stdatadictEnv$use_color_theme) {
     heading_1 = list(
       fill_style = create_fill(
         patternType = "solid",
-        fgColor = wb_color(color_theme$bg_color_h1)
+        fgColor = wb_color(color_theme$bg_h1)
       ),
       font_style = create_font(
         sz = 24,
         b = TRUE,
-        color = wb_color(color_theme$font_color_h1)
+        color = wb_color(color_theme$font_h1)
       ),
       border_style = create_border(
-        top    = "thick", top_color    = wb_color(color_theme$bg_color_primary), # maybe the border color should get it's own color definition
-        bottom = "thick", bottom_color = wb_color(color_theme$bg_color_primary)
+        top    = "thick", top_color    = wb_color(color_theme$bg_primary), # maybe the border color should get it's own color definition
+        bottom = "thick", bottom_color = wb_color(color_theme$bg_primary)
       )
     ),
     # --- text area ---
@@ -80,12 +80,12 @@ style_datadict <- function(wb, theme_name = stdatadictEnv$use_color_theme) {
     form_overview_section = list(
       fill_style = create_fill(
         patternType = "solid",
-        fgColor = wb_color(color_theme$bg_color_primary)
+        fgColor = wb_color(color_theme$bg_primary)
       ),
       font_style = create_font(
         sz = 14,
         b = TRUE,
-        color = wb_color(color_theme$font_color_primary)
+        color = wb_color(color_theme$font_primary)
       ),
       border_style = create_border() # maybe one day add color theme option for border
     ),
@@ -93,11 +93,11 @@ style_datadict <- function(wb, theme_name = stdatadictEnv$use_color_theme) {
     table_head = list(
       fill_style = create_fill(
         patternType = "solid",
-        fgColor = wb_color(color_theme$bg_color_tablehead)
+        fgColor = wb_color(color_theme$bg_tablehead)
       ),
       font_style = create_font(
         b = TRUE,
-        color = wb_color(color_theme$font_color_tablehead)
+        color = wb_color(color_theme$font_tablehead)
       ),
       border_style = create_border(
         top    = "thin", top_color    = wb_color("black"),
@@ -110,11 +110,11 @@ style_datadict <- function(wb, theme_name = stdatadictEnv$use_color_theme) {
     visit_names = list(
       fill_style = create_fill(
         patternType = "solid",
-        fgColor = wb_color(color_theme$bg_color_visit)
+        fgColor = wb_color(color_theme$bg_visit)
       ),
       font_style = create_font(
         b = TRUE,
-        color = wb_color(color_theme$font_color_visit)
+        color = wb_color(color_theme$font_visit)
       ),
       border_style = create_border()
     ),
@@ -122,10 +122,10 @@ style_datadict <- function(wb, theme_name = stdatadictEnv$use_color_theme) {
     table_names = list(
       fill_style = create_fill(
         patternType = "solid",
-        fgColor = wb_color(color_theme$bg_color_tablecol_overview)
+        fgColor = wb_color(color_theme$bg_tablecol_overview)
       ),
       font_style = create_font(
-        color = wb_color(color_theme$font_color_tablecol_overview)
+        color = wb_color(color_theme$font_tablecol_overview)
       ),
       border_style = create_border()
     ),
@@ -133,11 +133,11 @@ style_datadict <- function(wb, theme_name = stdatadictEnv$use_color_theme) {
     form_sheet_head = list(
       fill_style = create_fill(
         patternType = "solid",
-        fgColor = wb_color(color_theme$bg_color_primary)
+        fgColor = wb_color(color_theme$bg_primary)
       ),
       font_style = create_font(
         b = TRUE,
-        color = wb_color(color_theme$font_color_primary)
+        color = wb_color(color_theme$font_primary)
       ),
       border_style = create_border()
     ),
@@ -145,7 +145,7 @@ style_datadict <- function(wb, theme_name = stdatadictEnv$use_color_theme) {
     form_sheet_tables = list(
       fill_style = create_fill(
         patternType = "solid",
-        fgColor = wb_color(tint_color(color_theme$bg_color_primary, 0.71))
+        fgColor = wb_color(tint_color(color_theme$bg_primary, 0.71))
       ),
       font_style = create_font(),
       border_style = create_border()
@@ -154,16 +154,49 @@ style_datadict <- function(wb, theme_name = stdatadictEnv$use_color_theme) {
     form_sheet_table_col = list(
       fill_style = create_fill(
         patternType = "solid",
-        fgColor = wb_color(color_theme$bg_color_tablecol_items)
+        fgColor = wb_color(color_theme$bg_tablecol_items)
       ),
       font_style = create_font(
-        color = wb_color(color_theme$font_color_tablecol_items)
+        color = wb_color(color_theme$font_tablecol_items)
       ),
       border_style = create_border(
-        top    = "thin", top_color    = wb_color(color_theme$border_color_tablecol_items),
-        bottom = "thin", bottom_color = wb_color(color_theme$border_color_tablecol_items),
-        left   = "thin", left_color   = wb_color(color_theme$border_color_tablecol_items),
-        right  = "thin", right_color  = wb_color(color_theme$border_color_tablecol_items)
+        top    = "thin", top_color    = wb_color(color_theme$border_tablecol_items),
+        bottom = "thin", bottom_color = wb_color(color_theme$border_tablecol_items),
+        left   = "thin", left_color   = wb_color(color_theme$border_tablecol_items),
+        right  = "thin", right_color  = wb_color(color_theme$border_tablecol_items)
+      )
+    ),
+    ### --- select column head ---
+    select_column_head = list(
+      fill_style = create_fill(
+        patternType = "solid",
+        fgColor = wb_color(tint_color(color_theme$border_select_column, 0.47))
+      ),
+      font_style = create_font(
+        color = wb_color(color_theme$font_select),
+        b = TRUE
+      ),
+      border_style = create_border(
+        top    = "thin", top_color    = wb_color("black"),
+        bottom = "thin", bottom_color = wb_color("black"),
+        left   = "thin", left_color   = wb_color("black"),
+        right  = "thin", right_color  = wb_color("black")
+      )
+    ),
+    ### --- select column ---
+    select_column = list(
+      fill_style = create_fill(
+        patternType = "solid",
+        fgColor = wb_color(color_theme$bg_select_column)
+      ),
+      font_style = create_font(
+        color = wb_color(color_theme$font_select)
+      ),
+      border_style = create_border(
+        top    = "thin", top_color    = wb_color(color_theme$border_select_column),
+        bottom = "thin", bottom_color = wb_color(color_theme$border_select_column),
+        left   = "thin", left_color   = wb_color(color_theme$border_select_column),
+        right  = "thin", right_color  = wb_color(color_theme$border_select_column)
       )
     )
   )
@@ -193,7 +226,9 @@ style_datadict <- function(wb, theme_name = stdatadictEnv$use_color_theme) {
     text_area = list(wrap_text = TRUE),
     form_overview_section = list(horizontal = "center"),
     table_head = list(wrap_text = TRUE, horizontal = "center"),
-    visit_names = list(wrap_text = TRUE, horizontal = "center")
+    visit_names = list(wrap_text = TRUE, horizontal = "center"),
+    select_column_head = list(horizontal = "center"),
+    select_column = list(horizontal = "center")
   )
 
   cell_style_options <- cell_style_options_a %>%

@@ -8,22 +8,25 @@ add_color_theme(
   name,
   template = "purpur",
   use_theme = TRUE,
-  bg_color_primary = NULL,
-  font_color_primary = NULL,
-  bg_color_subtitle = NULL,
-  font_color_subtitle = NULL,
-  bg_color_h1 = NULL,
-  font_color_h1 = NULL,
-  bg_color_tablehead = NULL,
-  font_color_tablehead = NULL,
-  bg_color_visit = NULL,
-  font_color_visit = NULL,
-  bg_color_tablecol_overview = NULL,
-  font_color_tablecol_overview = NULL,
-  bg_color_tablecol_items = NULL,
-  font_color_tablecol_items = NULL,
-  border_color_tablecol_items = NULL,
-  font_color_hidden = NULL
+  bg_primary = NULL,
+  font_primary = NULL,
+  bg_subtitle = NULL,
+  font_subtitle = NULL,
+  bg_h1 = NULL,
+  font_h1 = NULL,
+  bg_tablehead = NULL,
+  font_tablehead = NULL,
+  bg_visit = NULL,
+  font_visit = NULL,
+  bg_tablecol_overview = NULL,
+  font_tablecol_overview = NULL,
+  bg_tablecol_items = NULL,
+  font_tablecol_items = NULL,
+  border_tablecol_items = NULL,
+  font_hidden = NULL,
+  bg_select_column = NULL,
+  font_select_column = NULL,
+  border_select_column = NULL
 )
 }
 \arguments{
@@ -35,53 +38,62 @@ color values. The default is "purpur".}
 \item{use_theme}{logical. Should the newly defined theme used for the workbook?
 Default = TRUE}
 
-\item{bg_color_primary}{character color name or RGB hex code:
+\item{bg_primary}{character color name or RGB hex code:
 background for document and form titles}
 
-\item{font_color_primary}{character color name or RGB hex code:
+\item{font_primary}{character color name or RGB hex code:
 font color for document and form titles}
 
-\item{bg_color_subtitle}{character color name or RGB hex code:
+\item{bg_subtitle}{character color name or RGB hex code:
 background subtitle}
 
-\item{font_color_subtitle}{character color name or RGB hex code:
+\item{font_subtitle}{character color name or RGB hex code:
 font color subtitle}
 
-\item{bg_color_h1}{character color name or RGB hex code:
+\item{bg_h1}{character color name or RGB hex code:
 background heading}
 
-\item{font_color_h1}{character color name or RGB hex code:
+\item{font_h1}{character color name or RGB hex code:
 font color heading}
 
-\item{bg_color_tablehead}{character color name or RGB hex code:
+\item{bg_tablehead}{character color name or RGB hex code:
 background column names}
 
-\item{font_color_tablehead}{character color name or RGB hex code:
+\item{font_tablehead}{character color name or RGB hex code:
 font color column names}
 
-\item{bg_color_visit}{character color name or RGB hex code:
+\item{bg_visit}{character color name or RGB hex code:
 background visit names}
 
-\item{font_color_visit}{character color name or RGB hex code:
+\item{font_visit}{character color name or RGB hex code:
 font color visit names}
 
-\item{bg_color_tablecol_overview}{character color name or RGB hex code:
+\item{bg_tablecol_overview}{character color name or RGB hex code:
 background table names in form overview}
 
-\item{font_color_tablecol_overview}{character color name or RGB hex code:
+\item{font_tablecol_overview}{character color name or RGB hex code:
 font color table names in form overview}
 
-\item{bg_color_tablecol_items}{character color name or RGB hex code:
+\item{bg_tablecol_items}{character color name or RGB hex code:
 background table names in form items}
 
-\item{font_color_tablecol_items}{character color name or RGB hex code:
+\item{font_tablecol_items}{character color name or RGB hex code:
 font color table names in form items}
 
-\item{border_color_tablecol_items}{character color name or RGB hex code:
+\item{border_tablecol_items}{character color name or RGB hex code:
 border table names in form items}
 
-\item{font_color_hidden}{character color name or RGB hex code:
+\item{font_hidden}{character color name or RGB hex code:
 font color hidden forms and items}
+
+\item{bg_select_column}{character color name or RGB hex code:
+background color of 'select' column}
+
+\item{font_select_column}{character color name or RGB hex code:
+font color of 'select' column}
+
+\item{border_select_column}{character color name or RGB hex code:
+font color of 'select' border}
 }
 \value{
 new color theme as named list, invisibly
@@ -100,10 +112,10 @@ Use \code{\link[=ls_color_themes]{ls_color_themes()}} to list all currently avai
 \examples{
 add_color_theme("my_theme",
                 template = "purpur",
-                bg_color_primary = "steelblue4",
-                font_color_subtitle = "steelblue4",
-                bg_color_h1 = "steelblue2",
-                font_color_h1 = "#111188")
+                bg_primary = "steelblue4",
+                font_subtitle = "steelblue4",
+                bg_h1 = "steelblue2",
+                font_h1 = "#111188")
 }
 \seealso{
 \code{\link[=use_color_theme]{use_color_theme()}} \code{\link[=ls_color_themes]{ls_color_themes()}}

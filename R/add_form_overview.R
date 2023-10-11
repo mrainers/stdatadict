@@ -272,7 +272,7 @@ add_form_overview <- function(wb,
 
     hidden_font_color <- stdatadictEnv$use_color_theme %>%
       get_color_theme() %>%
-      .$font_color_hidden
+      .$font_hidden
 
     for (row in hidden) {
       wb$add_font(
@@ -338,10 +338,6 @@ add_form_overview <- function(wb,
       mutate(row_nr = dplyr::row_number()) %>%
       filter(as.logical(.data$hidden)) %>%
       dplyr::pull(.data$row_nr)
-
-    hidden_font_color <- stdatadictEnv$use_color_theme %>%
-      get_color_theme() %>%
-      .$font_color_hidden
 
     for (row in hidden) {
       wb$add_font(
@@ -409,10 +405,6 @@ add_form_overview <- function(wb,
       mutate(row_nr = dplyr::row_number()) %>%
       filter(as.logical(.data$hidden)) %>%
       dplyr::pull(.data$row_nr)
-
-    hidden_font_color <- stdatadictEnv$use_color_theme %>%
-      get_color_theme() %>%
-      .$font_color_hidden
 
     for (row in hidden) {
       wb$add_font(

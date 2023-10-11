@@ -102,29 +102,32 @@ show_color_theme <- function(name) {
   }
 
   theme_description <- list(
-    bg_color_primary             = "background for document and form titles ",
-    font_color_primary           = "font color for document and form titles",
-    bg_color_subtitle            = "background subtitle",
-    font_color_subtitle          = "fontcolor subtitle",
-    bg_color_h1                  = "background heading",
-    font_color_h1                = "fontcolor heading",
-    bg_color_tablehead           = "background column names",
-    font_color_tablehead         = "fontcolor column names",
-    bg_color_visit               = "background visit names",
-    font_color_visit             = "fontcolor visit names",
-    bg_color_tablecol_overview   = "background table names in form overview",
-    font_color_tablecol_overview = "fontcolor table names in form overview",
-    bg_color_tablecol_items      = "background table names in form items",
-    font_color_tablecol_items    = "fontcolor table names in form items",
-    border_color_tablecol_items  = "border table names in form items",
-    font_color_hidden            = "fontcolor hidden forms and items"
+    bg_primary             = "background for document and form titles ",
+    font_primary           = "font color for document and form titles",
+    bg_subtitle            = "background subtitle",
+    font_subtitle          = "fontcolor subtitle",
+    bg_h1                  = "background heading",
+    font_h1                = "fontcolor heading",
+    bg_tablehead           = "background column names",
+    font_tablehead         = "fontcolor column names",
+    bg_visit               = "background visit names",
+    font_visit             = "fontcolor visit names",
+    bg_tablecol_overview   = "background table names in form overview",
+    font_tablecol_overview = "fontcolor table names in form overview",
+    bg_tablecol_items      = "background table names in form items",
+    font_tablecol_items    = "fontcolor table names in form items",
+    border_tablecol_items  = "border table names in form items",
+    font_hidden            = "fontcolor hidden forms and items",
+    bg_select_column       = "background 'select' column",
+    font_select_column     = "font color 'select' column and questions",
+    border_select_column   = "border color 'select' column"
   )
 
-  color_theme <- stdatadictEnv$color_themes[[name]]
+  theme <- stdatadictEnv$color_themes[[name]]
 
-  colortable <- tibble::tibble(name = names(color_theme),
+  colortable <- tibble::tibble(name = names(theme),
                                description = unlist(theme_description),
-                               color = unlist(color_theme))
+                               color = unlist(theme))
 
   if (rlang::is_installed("kableExtra")) {
     colortable %>%
@@ -192,38 +195,44 @@ use_color_theme <- function(name) {
 #'     color values. The default is "purpur".
 #' @param use_theme logical. Should the newly defined theme used for the workbook?
 #'     Default = TRUE
-#' @param bg_color_primary character color name or RGB hex code:
+#' @param bg_primary character color name or RGB hex code:
 #'     background for document and form titles
-#' @param font_color_primary character color name or RGB hex code:
+#' @param font_primary character color name or RGB hex code:
 #'     font color for document and form titles
-#' @param bg_color_subtitle character color name or RGB hex code:
+#' @param bg_subtitle character color name or RGB hex code:
 #'     background subtitle
-#' @param font_color_subtitle character color name or RGB hex code:
+#' @param font_subtitle character color name or RGB hex code:
 #'     font color subtitle
-#' @param bg_color_h1 character color name or RGB hex code:
+#' @param bg_h1 character color name or RGB hex code:
 #'     background heading
-#' @param font_color_h1 character color name or RGB hex code:
+#' @param font_h1 character color name or RGB hex code:
 #'     font color heading
-#' @param bg_color_tablehead character color name or RGB hex code:
+#' @param bg_tablehead character color name or RGB hex code:
 #'     background column names
-#' @param font_color_tablehead character color name or RGB hex code:
+#' @param font_tablehead character color name or RGB hex code:
 #'     font color column names
-#' @param bg_color_visit character color name or RGB hex code:
+#' @param bg_visit character color name or RGB hex code:
 #'     background visit names
-#' @param font_color_visit character color name or RGB hex code:
+#' @param font_visit character color name or RGB hex code:
 #'     font color visit names
-#' @param bg_color_tablecol_overview character color name or RGB hex code:
+#' @param bg_tablecol_overview character color name or RGB hex code:
 #'     background table names in form overview
-#' @param font_color_tablecol_overview character color name or RGB hex code:
+#' @param font_tablecol_overview character color name or RGB hex code:
 #'     font color table names in form overview
-#' @param bg_color_tablecol_items character color name or RGB hex code:
+#' @param bg_tablecol_items character color name or RGB hex code:
 #'     background table names in form items
-#' @param font_color_tablecol_items character color name or RGB hex code:
+#' @param font_tablecol_items character color name or RGB hex code:
 #'     font color table names in form items
-#' @param border_color_tablecol_items character color name or RGB hex code:
+#' @param border_tablecol_items character color name or RGB hex code:
 #'     border table names in form items
-#' @param font_color_hidden character color name or RGB hex code:
+#' @param font_hidden character color name or RGB hex code:
 #'     font color hidden forms and items
+#' @param bg_select_column character color name or RGB hex code:
+#'     background color of 'select' column
+#' @param font_select_column character color name or RGB hex code:
+#'     font color of 'select' column
+#' @param border_select_column character color name or RGB hex code:
+#'     font color of 'select' border
 #'
 #' @return new color theme as named list, invisibly
 #'
@@ -233,30 +242,33 @@ use_color_theme <- function(name) {
 #' @examples
 #' add_color_theme("my_theme",
 #'                 template = "purpur",
-#'                 bg_color_primary = "steelblue4",
-#'                 font_color_subtitle = "steelblue4",
-#'                 bg_color_h1 = "steelblue2",
-#'                 font_color_h1 = "#111188")
+#'                 bg_primary = "steelblue4",
+#'                 font_subtitle = "steelblue4",
+#'                 bg_h1 = "steelblue2",
+#'                 font_h1 = "#111188")
 add_color_theme <- function(
     name,
     template = "purpur",
     use_theme = TRUE,
-    bg_color_primary = NULL,
-    font_color_primary = NULL,
-    bg_color_subtitle = NULL,
-    font_color_subtitle = NULL,
-    bg_color_h1 = NULL,
-    font_color_h1 = NULL,
-    bg_color_tablehead = NULL,
-    font_color_tablehead = NULL,
-    bg_color_visit = NULL,
-    font_color_visit = NULL,
-    bg_color_tablecol_overview = NULL,
-    font_color_tablecol_overview = NULL,
-    bg_color_tablecol_items = NULL,
-    font_color_tablecol_items = NULL,
-    border_color_tablecol_items = NULL,
-    font_color_hidden = NULL
+    bg_primary = NULL,
+    font_primary = NULL,
+    bg_subtitle = NULL,
+    font_subtitle = NULL,
+    bg_h1 = NULL,
+    font_h1 = NULL,
+    bg_tablehead = NULL,
+    font_tablehead = NULL,
+    bg_visit = NULL,
+    font_visit = NULL,
+    bg_tablecol_overview = NULL,
+    font_tablecol_overview = NULL,
+    bg_tablecol_items = NULL,
+    font_tablecol_items = NULL,
+    border_tablecol_items = NULL,
+    font_hidden = NULL,
+    bg_select_column = NULL,
+    font_select_column = NULL,
+    border_select_column = NULL
     ) {
   template_theme <- get_color_theme(template)
   # get color parameters from function call

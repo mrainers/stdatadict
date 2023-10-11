@@ -103,7 +103,7 @@ insert_worksheet <- function(wb, .after = 0, ...) {
     .after <- match(.after, old_sheet_names)
   }
 
-  if (!(.after %in% 1:length(old_sheet_order))) {
+  if (!(.after %in% 0:length(old_sheet_order))) {
     stop("'.after' must be the name of an already existing sheet or an existing
          sheet number.")
   }
