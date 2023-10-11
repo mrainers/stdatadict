@@ -1,27 +1,28 @@
-key,en,de
-as_of,As of:,Stand:
-form_overview_section,Form Overview,Formular Übersicht
-form_descr_intro,"In the tables below, you will find an overview of all forms included in the dataset. They are of the following form types:","Die unten stehenden Tabellen, bieten eine Übersicht über alle im Datensatz vorhandenen Formulare. Sie sind unterteilt in die folgenden Formulartypen:"
-visit_forms_descr_item,Visit forms,Visiten-Formulare
-visit_forms_descr,"are created for specific visits. In a visit form table a patient can have multiple entries (rows), one entry for each visit in which the form is used.","werden zu bestimmten Visiten angelegt. Die Visiten-Form-Tabellen können mehrere Einträge (Zeilen) pro Patient haben, jeweils einer, je Visite in dem das Formular angelegt wurde."
-casenode_forms_descr_item,Casenode forms,Casenode-Formulare
-casenode_forms_descr,"will be generated once per patient regardless of visits and they will be supplemented as needed during the course of the study. In the casenode tables, each patient has max. one entry (row).","werden Visitenunabhängig, einmal pro Patient angelegt und ggf. im weiteren Studienverlauf ergänztnmal pro Patient angelegt. Sie werden bei Bedarf im Studienverlauf fortwährend und unabhängig von Visiten aktualisiert. Tabellen mit Casenode-Formularen enthalten jeweils nur einen Eintrag (Zeile) pro Patient."
-subforms_descr_item,Subforms,Unterformulare
-subforms_descr,"also called repeating groups, are groups of variables that can be used repeatedly in one or more forms. They are stored in extra tables during data export.","auch Wiederholungsgruppen genannt, sind Variablengruppen, die in einem oder mehreren Formularen wiederholt eingebunden werden können. Sie sind in extra Tabellen gespeichert."
-form_items_sheet_descr,The following work sheets in this document each represent a visit or casenode form with the variables and subforms it contains. The 'Table' column informs about the table name that contains the variables respectivly.,"Die folgenden Arbeitsblätter in diesem Dokument repräsentieren jeweils ein Visiten- oder Casenode-Formular mit ihren den Variablen und Unterformularen, die diese enthalten. Die 'Tabelle'-Spalte führt aus, in welcher Tabelle sich die jeweilige Variable befindet."
-hidden_descr,"Grayed out lines are hidden elements in Secutrial. This means that those forms or variables are not present in the current data entry screen, and consequently no, or only little, data has been entered for these elements.","Ausgegraute Zeilen sind ""versteckte"" Elemente in Secutrial. Sie werden in der aktuellen Dateneingabemaske nicht angezeigt. Das bedeutet, dass diese Formulare oder Variablen keine oder nur sehr wenige Einträge enthalten."
-visit_forms_subsection,Forms at Visits,Formulare bei Visiten
-casenode_forms_subsection,Casenode Forms,Casenode-Formulare
-subforms_subsection,Subforms / Repetition Groups,Unterformulare / Wiederholungsgruppen
-tables_row,Tables,Tabellen
-table_col,Table,Tabelle
-formname_col,Form Name,Formularname
-mainform_col,Embedding Form,Einbindendes Formular
-subform_table_col,Repetition Group Table,Wiederholungsgruppe Tabelle
-subform_name_col,Repetition Group Name,Wiederholungsgruppe Name
-question_col,Question,Frage
-varlab_col,Variable Label,Variablenlabel
-varname_col,Variable Name,Variablenname
-vartype_col,Type,Variablentyp
-values_col,Values,Werte
-test,"test one, two, three","Test eins, zwei, drei"
+"key","en","de"
+"as_of","As of:","Stand:"
+"form_overview_section","Form Overview","Formular Übersicht"
+"form_descr_intro","In the tables below, you will find an overview of all forms included in the dataset. They are of the following form types:","Die unten stehenden Tabellen, bieten eine Übersicht über alle im Datensatz vorhandenen Formulare. Sie sind unterteilt in die folgenden Formulartypen:"
+"visit_forms_descr_item","Visit forms","Visiten-Formulare"
+"visit_forms_descr","are created for specific visits. In a visit form table a patient can have multiple entries (rows), one entry for each visit in which the form is used.","werden zu bestimmten Visiten angelegt. Die Visiten-Form-Tabellen können mehrere Einträge (Zeilen) pro Patient haben, jeweils einer, je Visite in dem das Formular angelegt wurde."
+"casenode_forms_descr_item","Casenode forms","Casenode-Formulare"
+"casenode_forms_descr","will be generated once per patient regardless of visits and they will be supplemented as needed during the course of the study. In the casenode tables, each patient has max. one entry (row).","werden Visitenunabhängig, einmal pro Patient angelegt und ggf. im weiteren Studienverlauf ergänztnmal pro Patient angelegt. Sie werden bei Bedarf im Studienverlauf fortwährend und unabhängig von Visiten aktualisiert. Tabellen mit Casenode-Formularen enthalten jeweils nur einen Eintrag (Zeile) pro Patient."
+"subforms_descr_item","Subforms","Unterformulare"
+"subforms_descr","also called repeating groups, are groups of variables that can be used repeatedly in one or more forms. They are stored in extra tables during data export.","auch Wiederholungsgruppen genannt, sind Variablengruppen, die in einem oder mehreren Formularen wiederholt eingebunden werden können. Sie sind in extra Tabellen gespeichert."
+"form_items_sheet_descr","The following work sheets in this document each represent a visit or casenode form with the variables and subforms it contains. The 'Table' column informs about the table name that contains the variables respectivly.","Die folgenden Arbeitsblätter in diesem Dokument repräsentieren jeweils ein Visiten- oder Casenode-Formular mit ihren den Variablen und Unterformularen, die diese enthalten. Die 'Tabelle'-Spalte führt aus, in welcher Tabelle sich die jeweilige Variable befindet."
+"hidden_descr","Grayed out lines are hidden elements in Secutrial. This means that those forms or variables are not present in the current data entry screen, and consequently no, or only little, data has been entered for these elements.","Ausgegraute Zeilen sind ""versteckte"" Elemente in Secutrial. Sie werden in der aktuellen Dateneingabemaske nicht angezeigt. Das bedeutet, dass diese Formulare oder Variablen keine oder nur sehr wenige Einträge enthalten."
+"visit_forms_subsection","Forms at Visits","Formulare bei Visiten"
+"casenode_forms_subsection","Casenode Forms","Casenode-Formulare"
+"subforms_subsection","Subforms / Repetition Groups","Unterformulare / Wiederholungsgruppen"
+"form_not_available","No {formtype} available.","Keine {formtype} vorhanden."
+"tables_row","Tables","Tabellen"
+"table_col","Table","Tabelle"
+"formname_col","Form Name","Formularname"
+"mainform_col","Embedding Form","Einbindendes Formular"
+"subform_table_col","Repetition Group Table","Wiederholungsgruppe Tabelle"
+"subform_name_col","Repetition Group Name","Wiederholungsgruppe Name"
+"question_col","Question","Frage"
+"varlab_col","Variable Label","Variablenlabel"
+"varname_col","Variable Name","Variablenname"
+"vartype_col","Type","Variablentyp"
+"values_col","Values","Werte"
+"test","test one, two, three","Test eins, zwei, drei"
