@@ -228,7 +228,7 @@ add_form_sheets <- function(wb, datadict_tables, var_select = FALSE) {
         pull(row)
 
       for (row in unhide_questions) {
-        wb$add_font(dims = str_glue("A{row+row_idx}"), color = wb_color("auto"))
+        wb$add_font(dims = str_glue("B{row+row_idx}"), color = wb_color("auto"))
       }
 
       # wrap text in table

@@ -537,12 +537,16 @@ join_with_form_items <- function(datadict_tables, data, ...) {
     dots$relationship <- "many-to-one"
   }
 
+  # get order of the form_items elements
+  form_items_order <- names(datadict_tables$form_items)
+
   # join form_items with data
   datadict_tables$form_items <- datadict_tables$form_items %>%
     tibble::enframe(name = "mainform") %>%
     tidyr::unnest(cols = c("value")) %>%
     rlang::exec("left_join", x = ., y = data_transl, !!!dots) %>%
     dplyr::nest_by(.data$mainform) %>%
+    arrange(match(.data$mainform, form_items_order)) %>%
     tibble::deframe()
 
   datadict_tables
