@@ -16,7 +16,7 @@ add_title(wb, x, sheet = current_sheet(), row = 1, doc_width = "G")
 \item{row}{(integer) in which row the title should be added. Default = 1}
 
 \item{doc_width}{(single character or numeric) Up to which column should the
-titles and texts spread? Default = "G"}
+texts spread? Default = "G"}
 }
 \value{
 A wbWorkbook, invisibly

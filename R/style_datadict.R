@@ -76,8 +76,8 @@ style_datadict <- function(wb, theme_name = stdatadictEnv$use_color_theme) {
       font_style = create_font(),
       border_style = create_border()
     ),
-    # --- form overview section title ---
-    form_overview_section = list(
+    # --- section title ---
+    section = list(
       fill_style = create_fill(
         patternType = "solid",
         fgColor = wb_color(color_theme$bg_primary)
@@ -224,7 +224,7 @@ style_datadict <- function(wb, theme_name = stdatadictEnv$use_color_theme) {
     as_of_date = list(indent = 1),
     heading_1 = list(horizontal = "center"),
     text_area = list(wrap_text = TRUE, vertical = "top"),
-    form_overview_section = list(horizontal = "center"),
+    section = list(horizontal = "center"),
     table_head = list(wrap_text = TRUE, horizontal = "center"),
     visit_names = list(wrap_text = TRUE, horizontal = "center"),
     select_column_head = list(horizontal = "center"),

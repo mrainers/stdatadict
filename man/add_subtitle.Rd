@@ -16,7 +16,7 @@ add_subtitle(wb, x, sheet = current_sheet(), row = 2, doc_width = "G")
 \item{row}{in which row the subtitle should be added. Default = 2}
 
 \item{doc_width}{(single character or numeric) Up to which column should the
-titles and texts spread? Default = "G"}
+texts spread? Default = "G"}
 }
 \value{
 A wbWorkbook, invisibly

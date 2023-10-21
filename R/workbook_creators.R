@@ -157,14 +157,71 @@ create_datadict <- function(datadict_tables,
   wb
 }
 
-#' Add Document Title
+
+#' Add Styled Text To The Workbook
+#'
+#' Add some Text to a given row, merge the cells of that row and apply a
+#' predefined style.
 #'
 #' @param wb A Workbook object containing a worksheet.
-#' @param x (character) The document title
+#' @param x The text to add to the workbook
 #' @param sheet The worksheet to write to. Can be the worksheet index or name.
 #' @param row (integer) in which row the title should be added. Default = 1
+#' @param start_col (single character or numeric) From which column should the
+#'     texts start? Default = "A"
 #' @param doc_width (single character or numeric) Up to which column should the
-#'     titles and texts spread? Default = "G"
+#'     texts spread? Default = "G"
+#' @param style (character) name of the cell style defined to the workbook.
+#'     If your worbook is named `wb` enter `wb$styles_mgr$xf$name` to get a list
+#'     of style names registered to the workbook
+#'
+#' @return A wbWorkbook, invisibly
+#' @export
+#'
+#' @examples
+#' wb <- openxlsx2::wb_workbook()
+#' style_datadict(wb)
+#' wb$add_worksheet()
+#' add_styled_line(wb, "some text", style = "title")
+add_styled_line <- function(wb,
+                            x,
+                            style,
+                            sheet = current_sheet(),
+                            row = 1,
+                            start_col = "A",
+                            doc_width = "G") {
+  # convert start_col
+  if (is.numeric(start_col)) start_col <- openxlsx2::int2col(start_col)
+  if (is.character(start_col)) start_col <- toupper(start_col)
+
+  # convert doc_width
+  if (is.numeric(doc_width)) doc_width <- openxlsx2::int2col(doc_width)
+  if (is.character(doc_width)) doc_width <- toupper(doc_width)
+
+  # add text
+  # wrap x in paste function, in case x is a formatted text.
+  # openxlsx2 has a bug, that wont print formated text.
+  wb$add_data(x = paste(x), sheet = sheet, dims = str_glue("{start_col}{row}"))
+
+  # merge cells in subtitle row
+  wb$merge_cells(sheet = sheet,
+                 dims = str_glue("{start_col}{row}:{doc_width}{row}"))
+
+  # apply subtitle style
+  # TODO write bug report: Border styles Styles are not transferred to merged cells
+  wb$set_cell_style(
+    sheet = sheet,
+    dims = str_glue("{start_col}{row}:{doc_width}{row}"),
+    style = wb$styles_mgr$get_xf_id(style)
+  )
+
+  invisible(wb)
+}
+
+#' Add Document Title
+#'
+#' @param x (character) The document title
+#' @inheritParams add_styled_line
 #'
 #' @return A wbWorkbook, invisibly
 #' @export
@@ -179,22 +236,13 @@ add_title <- function(wb,
                       sheet = current_sheet(),
                       row = 1,
                       doc_width = "G") {
-  # convert doc_width
-  if (is.numeric(doc_width)) doc_width <- openxlsx2::int2col(doc_width)
-  if (is.character(doc_width)) doc_width <- toupper(doc_width)
-
-  # add title
-  wb$add_data(x = paste(x), sheet = sheet, dims = str_glue("A{row}"))
-
-  # merge cells in title row
-  wb$merge_cells(sheet = sheet,
-                 dims = str_glue("A{row}:{doc_width}{row}"))
-  # apply title style
-  wb$set_cell_style(
-    sheet = sheet,
-    dims = str_glue("A{row}"),
-    style = wb$styles_mgr$get_xf_id("title")
-  )
+  wb <- add_styled_line(wb = wb,
+                        x = x,
+                        style = "title",
+                        sheet = sheet,
+                        row = row,
+                        start_col = "A",
+                        doc_width = doc_width)
 
   invisible(wb)
 }
@@ -204,7 +252,7 @@ add_title <- function(wb,
 #'
 #' @param x (character) The document subtitle
 #' @param row in which row the subtitle should be added. Default = 2
-#' @inheritParams add_title
+#' @inheritParams add_styled_line
 #'
 #' @return A wbWorkbook, invisibly
 #' @export
@@ -219,22 +267,13 @@ add_subtitle <- function(wb,
                          sheet = current_sheet(),
                          row = 2,
                          doc_width = "G") {
-  # convert doc_width
-  if (is.numeric(doc_width)) doc_width <- openxlsx2::int2col(doc_width)
-  if (is.character(doc_width)) doc_width <- toupper(doc_width)
-
-  # add subtitle
-  wb$add_data(x = paste(x), sheet = sheet, dims = str_glue("A{row}"))
-
-  # merge cells in subtitle row
-  wb$merge_cells(sheet = sheet,
-                 dims = str_glue("A{row}:{doc_width}{row}"))
-  # apply subtitle style
-  wb$set_cell_style(
-    sheet = sheet,
-    dims = str_glue("A{row}"),
-    style = wb$styles_mgr$get_xf_id("subtitle")
-  )
+  wb <- add_styled_line(wb = wb,
+                        x = x,
+                        style = "subtitle",
+                        sheet = sheet,
+                        row = row,
+                        start_col = "A",
+                        doc_width = doc_width)
 
   invisible(wb)
 }
@@ -260,25 +299,13 @@ add_asofdate <- function(wb,
                          sheet = current_sheet(),
                          row = 3,
                          doc_width = "G") {
-  # convert doc_width
-  if (is.numeric(doc_width)) doc_width <- openxlsx2::int2col(doc_width)
-  if (is.character(doc_width)) doc_width <- toupper(doc_width)
-
-  # add as of date
-  wb$add_data(x = paste(stdatadictEnv$i18n_dd$t("as_of"), x),
-              sheet = sheet,
-              dims = str_glue("A{row}"))
-
-  # merge cells in as of date row
-  wb$merge_cells(sheet = sheet,
-                 dims = str_glue("A{row}:{doc_width}{row}"))
-
-  # apply as of date style
-  wb$set_cell_style(
-    sheet = sheet,
-    dims = str_glue("A{row}"),
-    style = wb$styles_mgr$get_xf_id("as_of_date")
-  )
+  wb <- add_styled_line(wb = wb,
+                        x = x,
+                        style = "as_of_date",
+                        sheet = sheet,
+                        row = row,
+                        start_col = "A",
+                        doc_width = doc_width)
 
   invisible(wb)
 }
@@ -303,28 +330,47 @@ add_heading1 <- function(wb,
                          sheet = current_sheet(),
                          row = 1,
                          doc_width = "G") {
-  # convert doc_width
-  if (is.numeric(doc_width)) doc_width <- openxlsx2::int2col(doc_width)
-  if (is.character(doc_width)) doc_width <- toupper(doc_width)
-
-  # add heading
-  wb$add_data(x = paste(x), sheet = sheet, dims = str_glue("A{row}"))
-
-  # merge cells in subtitle row
-  wb$merge_cells(sheet = sheet,
-                 dims = str_glue("A{row}:{doc_width}{row}"))
-
-  # apply subtitle style
-  # TODO write bug report: Border styles Styles are not transferred to merged cells
-  wb$set_cell_style(
-    sheet = sheet,
-    dims = str_glue("A{row}:{doc_width}{row}"),
-    style = wb$styles_mgr$get_xf_id("heading_1")
-  )
+  wb <- add_styled_line(wb = wb,
+                        x = x,
+                        style = "heading_1",
+                        sheet = sheet,
+                        row = row,
+                        start_col = "A",
+                        doc_width = doc_width)
 
   invisible(wb)
 }
 
+
+#' Add Section Title
+#'
+#' @param x (character) The Section Title Text
+#' @param row in which row the section Titleshould be added. Default = 1
+#' @inheritParams add_title
+#'
+#' @return A wbWorkbook, invisibly
+#' @export
+#'
+#' @examples
+#' wb <- openxlsx2::wb_workbook()
+#' style_datadict(wb)
+#' wb$add_worksheet()
+#' add_section(wb, "My Section title", row = 3)
+add_section <- function(wb,
+                        x,
+                        sheet = current_sheet(),
+                        row = 1,
+                        doc_width = "G") {
+  wb <- add_styled_line(wb = wb,
+                        x = x,
+                        style = "section",
+                        sheet = sheet,
+                        row = row,
+                        start_col = "A",
+                        doc_width = doc_width)
+
+  invisible(wb)
+}
 
 #' Add A text paragraph
 #'
@@ -362,25 +408,13 @@ add_paragraph <- function(wb,
                          row = 1,
                          doc_width = "G",
                          font_weight = 0.86) {
-  # convert doc_width
-  if (is.numeric(doc_width)) doc_width <- openxlsx2::int2col(doc_width)
-  if (is.character(doc_width)) doc_width <- toupper(doc_width)
-
-  # add text
-  # wrap x in paste function, in case x is a formatted text.
-  # openxlsx2 has a bug, that wont print formated text.
-  wb$add_data(x = paste(x), sheet = sheet, dims = str_glue("A{row}"))
-
-  # merge cells in text row
-  wb$merge_cells(sheet = sheet,
-                 dims = str_glue("A{row}:{doc_width}{row}"))
-
-  # apply text paragraph style
-  wb$set_cell_style(
-    sheet = sheet,
-    dims = str_glue("A{row}"),
-    style = wb$styles_mgr$get_xf_id("text_area")
-  )
+  wb <- add_styled_line(wb = wb,
+                        x = x,
+                        style = "text_area",
+                        sheet = sheet,
+                        row = row,
+                        start_col = "A",
+                        doc_width = doc_width)
 
   # estimate number of needed lines of the text
   font <- get_font_attributes(wb, "text_area")

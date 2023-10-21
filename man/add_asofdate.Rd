@@ -17,7 +17,7 @@ was created}
 \item{row}{in which row the As Of Date should be added. Default = 3}
 
 \item{doc_width}{(single character or numeric) Up to which column should the
-titles and texts spread? Default = "G"}
+texts spread? Default = "G"}
 }
 \value{
 A wbWorkbook, invisibly

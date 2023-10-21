@@ -23,7 +23,7 @@ add_paragraph(
 \item{row}{in which row the As Of Date should be added. Default = 1}
 
 \item{doc_width}{(single character or numeric) Up to which column should the
-titles and texts spread? Default = "G"}
+texts spread? Default = "G"}
 
 \item{font_weight}{(numeric) correction factor if the estimated number of
 needed lines is off. Default: 0.86}

@@ -122,17 +122,7 @@ add_form_overview <- function(wb,
 
   # "Forms at Visits" ----------------------------------------------------------
   # section title
-  wb$add_data(
-    x = stdatadictEnv$i18n_dd$t("visit_forms_subsection"),
-    dims = str_glue("A{row_idx}")
-  )
-
-  wb$merge_cells(dims = str_glue("A{row_idx}:{doc_width}{row_idx}"))
-
-  wb$set_cell_style(
-    dims = str_glue("A{row_idx}:{doc_width}{row_idx}"),
-    style = wb$styles_mgr$get_xf_id("form_overview_section")
-  )
+  add_section(wb, stdatadictEnv$i18n_dd$t("visit_forms_subsection"), row = row_idx)
 
   row_idx <- row_idx + 2
 
@@ -206,17 +196,7 @@ add_form_overview <- function(wb,
 
   # casenode forms -------------------------------------------------------------
   # section title
-  wb$add_data(
-    x = stdatadictEnv$i18n_dd$t("casenode_forms_subsection"),
-    dims = str_glue("A{row_idx}")
-  )
-
-  wb$merge_cells(dims = str_glue("A{row_idx}:{doc_width}{row_idx}"))
-
-  wb$set_cell_style(
-    dims = str_glue("A{row_idx}:{doc_width}{row_idx}"),
-    style = wb$styles_mgr$get_xf_id("form_overview_section")
-  )
+  add_section(wb, stdatadictEnv$i18n_dd$t("casenode_forms_subsection"), row = row_idx)
 
   row_idx <- row_idx + 2
 
@@ -273,17 +253,7 @@ add_form_overview <- function(wb,
   # subforms -------------------------------------------------------------------
 
   # section title
-  wb$add_data(
-    x = stdatadictEnv$i18n_dd$t("subforms_subsection"),
-    dims = str_glue("A{row_idx}")
-  )
-
-  wb$merge_cells(dims = str_glue("A{row_idx}:{doc_width}{row_idx}"))
-
-  wb$set_cell_style(
-    dims = str_glue("A{row_idx}:{doc_width}{row_idx}"),
-    style = wb$styles_mgr$get_xf_id("form_overview_section")
-  )
+  add_section(wb, stdatadictEnv$i18n_dd$t("subforms_subsection"), row = row_idx)
 
   row_idx <- row_idx + 2
 
