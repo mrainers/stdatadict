@@ -156,3 +156,345 @@ create_datadict <- function(datadict_tables,
 
   wb
 }
+
+#' Add Document Title
+#'
+#' @param wb A Workbook object containing a worksheet.
+#' @param x (character) The document title
+#' @param sheet The worksheet to write to. Can be the worksheet index or name.
+#' @param row (integer) in which row the title should be added. Default = 1
+#' @param doc_width (single character or numeric) Up to which column should the
+#'     titles and texts spread? Default = "G"
+#'
+#' @return A wbWorkbook, invisibly
+#' @export
+#'
+#' @examples
+#' wb <- openxlsx2::wb_workbook()
+#' style_datadict(wb)
+#' wb$add_worksheet()
+#' add_title(wb, "My Workbook Title")
+add_title <- function(wb,
+                      x,
+                      sheet = current_sheet(),
+                      row = 1,
+                      doc_width = "G") {
+  # convert doc_width
+  if (is.numeric(doc_width)) doc_width <- openxlsx2::int2col(doc_width)
+  if (is.character(doc_width)) doc_width <- toupper(doc_width)
+
+  # add title
+  wb$add_data(x = paste(x), sheet = sheet, dims = str_glue("A{row}"))
+
+  # merge cells in title row
+  wb$merge_cells(sheet = sheet,
+                 dims = str_glue("A{row}:{doc_width}{row}"))
+  # apply title style
+  wb$set_cell_style(
+    sheet = sheet,
+    dims = str_glue("A{row}"),
+    style = wb$styles_mgr$get_xf_id("title")
+  )
+
+  invisible(wb)
+}
+
+
+#' Add Document Subtitle
+#'
+#' @param x (character) The document subtitle
+#' @param row in which row the subtitle should be added. Default = 2
+#' @inheritParams add_title
+#'
+#' @return A wbWorkbook, invisibly
+#' @export
+#'
+#' @examples
+#' wb <- openxlsx2::wb_workbook()
+#' style_datadict(wb)
+#' wb$add_worksheet()
+#' add_subtitle(wb, "My Subtitle")
+add_subtitle <- function(wb,
+                         x,
+                         sheet = current_sheet(),
+                         row = 2,
+                         doc_width = "G") {
+  # convert doc_width
+  if (is.numeric(doc_width)) doc_width <- openxlsx2::int2col(doc_width)
+  if (is.character(doc_width)) doc_width <- toupper(doc_width)
+
+  # add subtitle
+  wb$add_data(x = paste(x), sheet = sheet, dims = str_glue("A{row}"))
+
+  # merge cells in subtitle row
+  wb$merge_cells(sheet = sheet,
+                 dims = str_glue("A{row}:{doc_width}{row}"))
+  # apply subtitle style
+  wb$set_cell_style(
+    sheet = sheet,
+    dims = str_glue("A{row}"),
+    style = wb$styles_mgr$get_xf_id("subtitle")
+  )
+
+  invisible(wb)
+}
+
+
+#' Add Export As of Date
+#'
+#' @param x (character or Date time) The Date (time) when the Export data
+#'     was created
+#' @param row in which row the As Of Date should be added. Default = 3
+#' @inheritParams add_title
+#'
+#' @return A wbWorkbook, invisibly
+#' @export
+#'
+#' @examples
+#' wb <- openxlsx2::wb_workbook()
+#' style_datadict(wb)
+#' wb$add_worksheet()
+#' add_asofdate(wb, "2022-11-20")
+add_asofdate <- function(wb,
+                         x,
+                         sheet = current_sheet(),
+                         row = 3,
+                         doc_width = "G") {
+  # convert doc_width
+  if (is.numeric(doc_width)) doc_width <- openxlsx2::int2col(doc_width)
+  if (is.character(doc_width)) doc_width <- toupper(doc_width)
+
+  # add as of date
+  wb$add_data(x = paste(stdatadictEnv$i18n_dd$t("as_of"), x),
+              sheet = sheet,
+              dims = str_glue("A{row}"))
+
+  # merge cells in as of date row
+  wb$merge_cells(sheet = sheet,
+                 dims = str_glue("A{row}:{doc_width}{row}"))
+
+  # apply as of date style
+  wb$set_cell_style(
+    sheet = sheet,
+    dims = str_glue("A{row}"),
+    style = wb$styles_mgr$get_xf_id("as_of_date")
+  )
+
+  invisible(wb)
+}
+
+
+#' Add Heading 1
+#'
+#' @param x (character) The Heading text
+#' @param row in which row the heading should be added. Default = 1
+#' @inheritParams add_title
+#'
+#' @return A wbWorkbook, invisibly
+#' @export
+#'
+#' @examples
+#' wb <- openxlsx2::wb_workbook()
+#' style_datadict(wb)
+#' wb$add_worksheet()
+#' add_heading1(wb, "My Subtitle")
+add_heading1 <- function(wb,
+                         x,
+                         sheet = current_sheet(),
+                         row = 1,
+                         doc_width = "G") {
+  # convert doc_width
+  if (is.numeric(doc_width)) doc_width <- openxlsx2::int2col(doc_width)
+  if (is.character(doc_width)) doc_width <- toupper(doc_width)
+
+  # add heading
+  wb$add_data(x = paste(x), sheet = sheet, dims = str_glue("A{row}"))
+
+  # merge cells in subtitle row
+  wb$merge_cells(sheet = sheet,
+                 dims = str_glue("A{row}:{doc_width}{row}"))
+
+  # apply subtitle style
+  # TODO write bug report: Border styles Styles are not transferred to merged cells
+  wb$set_cell_style(
+    sheet = sheet,
+    dims = str_glue("A{row}:{doc_width}{row}"),
+    style = wb$styles_mgr$get_xf_id("heading_1")
+  )
+
+  invisible(wb)
+}
+
+
+#' Add A text paragraph
+#'
+#' This function merges cells of a given document with (e.g. A:G) and sets the
+#' cell style to "text_area". Within this cell style the text is wrapped.
+#' However Excel fails to set the correct row height, when text is added into
+#' merged cells. This function tries to estimate the right number of lines needed
+#' to display the text and set the row height (with some extra space at the end)
+#' accordingly.
+#'
+#' @param x (character string) the text of the paragraph
+#' @param row in which row the As Of Date should be added. Default = 1
+#' @param font_weight (numeric) correction factor if the estimated number of
+#'     needed lines is off. Default: 0.86
+#' @inheritParams add_title
+#'
+#' @return A wbWorkbook, invisibly
+#' @export
+#'
+#' @examples
+#' wb <- openxlsx2::wb_workbook()
+#' style_datadict(wb)
+#' wb$add_worksheet()
+#'
+#' p <- paste(
+#'   "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy",
+#'   "eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam",
+#'   "voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet",
+#'   "clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.")
+#'
+#' add_paragraph(wb, p)
+add_paragraph <- function(wb,
+                         x,
+                         sheet = current_sheet(),
+                         row = 1,
+                         doc_width = "G",
+                         font_weight = 0.86) {
+  # convert doc_width
+  if (is.numeric(doc_width)) doc_width <- openxlsx2::int2col(doc_width)
+  if (is.character(doc_width)) doc_width <- toupper(doc_width)
+
+  # add text
+  # wrap x in paste function, in case x is a formatted text.
+  # openxlsx2 has a bug, that wont print formated text.
+  wb$add_data(x = paste(x), sheet = sheet, dims = str_glue("A{row}"))
+
+  # merge cells in text row
+  wb$merge_cells(sheet = sheet,
+                 dims = str_glue("A{row}:{doc_width}{row}"))
+
+  # apply text paragraph style
+  wb$set_cell_style(
+    sheet = sheet,
+    dims = str_glue("A{row}"),
+    style = wb$styles_mgr$get_xf_id("text_area")
+  )
+
+  # estimate number of needed lines of the text
+  font <- get_font_attributes(wb, "text_area")
+
+  fontname <- font$name %||% "Calibri"
+  fsize <- as.numeric(font$sz) %||% 11
+
+  pwidth <- calc_colswidth(wb, sheet = sheet, cols = str_glue("A:{doc_width}"))
+  lines <- calc_lines(text = x, pwidth = pwidth, font = fontname, fsize = fsize,
+                      font_weight = font_weight)
+
+  # row_height = nr of lines * font size + margin + extra space
+  row_height <- (lines * (fsize + 4)) + fsize * 0.5
+
+  # set cell height based on the number of guessed lines
+  wb$set_row_heights(rows = row, heights = row_height)
+
+  invisible(wb)
+}
+
+#' Format an empty Row in the worksheet
+#'
+#' The row is styled as the style of "text_area", which is the default font
+#' with a white background.
+#'
+#' @inheritParams add_paragraph
+#' @return A wbWorkbook, invisibly
+#' @export
+#'
+#' @examples
+#' wb <- openxlsx2::wb_workbook()
+#' style_datadict(wb)
+#' wb$add_worksheet()
+#'
+#' format_empty_row(wb, row = 3)
+format_empty_row <- function(wb,
+                          sheet = current_sheet(),
+                          row = 1,
+                          doc_width = "G") {
+  if (is.numeric(doc_width)) doc_width <- openxlsx2::int2col(doc_width)
+  if (is.character(doc_width)) doc_width <- toupper(doc_width)
+
+  # this is to avoid a bug/error, when trying to style multiple cells at once
+  # in an empty worksheet
+  # TODO: write bug report
+  wb$set_cell_style(
+    sheet = sheet,
+    dims = str_glue("A{row}"),
+    style = wb$styles_mgr$get_xf_id("text_area")
+  )
+
+  # now apply the actual row styling
+  wb$set_cell_style(
+    sheet = sheet,
+    dims = str_glue("A{row}:{doc_width}{row}"),
+    style = wb$styles_mgr$get_xf_id("text_area")
+  )
+
+  invisible(wb)
+}
+
+
+#' Format Matched Strings In a Text.
+#'
+#' @param text (character) text that contains strings that should be formatted
+#' @param pattern regular expressions, or vector of regular expressions
+#' @param fmt_ops list of format options pass to [openxlsx2::fmt_txt()]
+#'
+#' @return an openxlsx2 fmt_txt string
+#' @export
+#'
+#' @examples
+#' shopping_list <- "apples x4, bag of flour, bag of sugar, milk x2"
+#'
+#' # format the word 'bag' bold
+#' fmt_txt_at(shopping_list, "\\bbag\\b", list(bold = TRUE))
+#'
+#' # format the x<nr> green and bold and the "bag of" in italic
+#' fmt_txt_at(shopping_list,
+#'            c("x\\d+", "\\bbag of\\b"),
+#'            list(list(bold = TRUE, color = openxlsx2::wb_color("green")),
+#'                 list(italic = TRUE)
+#'                )
+#'            )
+fmt_txt_at <- function(text, pattern, fmt_ops) {
+  # find all strings that match the patterns
+
+  fmt_pos <- text %>% stringr::str_locate_all(pattern)
+
+  # find all strings that don' match any pattern
+  no_fmt_pos <- fmt_pos %>%
+    purrr::reduce(rbind) %>%
+    # sort by start column
+    {.[order(.[, "start"]),]} %>%
+    stringr::invert_match()
+
+  # create table of all substrings and their styling options
+  fmt_strings <- map2(
+    fmt_pos, fmt_ops,
+    ~ tibble::as_tibble(.x) %>%
+      mutate(fmts = list(.y))
+  ) %>%
+    append(list(
+      no_fmt_pos %>%
+        tibble::as_tibble() %>%
+        mutate(fmts = list(list()))
+    )) %>%
+    dplyr::bind_rows() %>%
+    arrange(.data$start)
+
+  # create formatted text from substrings and format options
+  purrr::pmap(fmt_strings, function(start, end, fmts) {
+    rlang::exec("fmt_txt", x = str_sub(text, start, end), !!!fmts)
+  }) %>%
+    purrr::reduce(`+`)
+}
+

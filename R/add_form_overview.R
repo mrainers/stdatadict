@@ -51,161 +51,73 @@ add_form_overview <- function(wb,
 
   # add title
   if (!is.null(title)) {
-    wb$add_data(x = title, dims = str_glue("A{row_idx}"))
-    wb$merge_cells(dims = str_glue("A{row_idx}:{doc_width}{row_idx}"))
-    wb$set_cell_style(
-      dims = str_glue("A{row_idx}"),
-      style = wb$styles_mgr$get_xf_id("title")
-    )
+    add_title(wb, title, doc_width = doc_width)
     row_idx <- row_idx + 1
   }
 
   # add subtitle
   if (!is.null(subtitle)) {
-    wb$add_data(x = as.character(subtitle), dims = str_glue("A{row_idx}"))
-    wb$merge_cells(dims = str_glue("A{row_idx}:{doc_width}{row_idx}"))
-    wb$set_cell_style(
-      dims = str_glue("A{row_idx}"),
-      style = wb$styles_mgr$get_xf_id("subtitle")
-    )
+    add_subtitle(wb, subtitle, row = row_idx, doc_width = doc_width)
     row_idx <- row_idx + 1
   }
 
   # add as_of_date
   if (!is.null(as_of_date)) {
-    wb$add_data(
-      x = paste(stdatadictEnv$i18n_dd$t("as_of"), as_of_date), # TODO: format date with shiny.i18n (?)
-      dims = str_glue("A{row_idx}")
-    )
-    wb$merge_cells(dims = str_glue("A{row_idx}:{doc_width}{row_idx}"))
-    wb$set_cell_style(
-      dims = str_glue("A{row_idx}"),
-      style = wb$styles_mgr$get_xf_id("as_of_date")
-    )
+    add_asofdate(wb, as_of_date, row = row_idx, doc_width = doc_width)
     row_idx <- row_idx + 1
   }
 
   # add white row
   if (!is.null(c(title, subtitle, as_of_date))) {
-    wb$merge_cells(dims = str_glue("A{row_idx}:{doc_width}{row_idx}"))
-    wb$set_cell_style(
-      dims = str_glue("A{row_idx}"),
-      style = wb$styles_mgr$get_xf_id("text_area")
-    )
+    format_empty_row(wb, row = row_idx, doc_width = doc_width)
     row_idx <- row_idx + 1
   }
 
   # add heading
-  wb$add_data(
-    x = stdatadictEnv$i18n_dd$t("form_overview_section"),
-    dims = str_glue("A{row_idx}")
-  )
-  wb$merge_cells(dims = str_glue("A{row_idx}:{doc_width}{row_idx}"))
-  wb$set_cell_style(
-    dims = str_glue("A{row_idx}:{doc_width}{row_idx}"),
-    style = wb$styles_mgr$get_xf_id("heading_1")
-  )
-  # TODO write bug report: Border styles Styles are not transferred to merged cells
+  add_heading1(wb, x = stdatadictEnv$i18n_dd$t("form_overview_section"),
+              row = row_idx, doc_width = doc_width)
   row_idx <- row_idx + 1
 
   # add white row
-  wb$merge_cells(dims = str_glue("A{row_idx}:{doc_width}{row_idx}"))
-  wb$set_cell_style(
-    dims = str_glue("A{row_idx}"),
-    style = wb$styles_mgr$get_xf_id("text_area")
-  )
+  format_empty_row(wb, row = row_idx, doc_width = doc_width)
   row_idx <- row_idx + 1
 
   # add descriptions
   if (form_type_description) {
-    # rows that needs two have a higth, that it can hold two lines
-    l2rows <- c()
 
-    # merge every line over the whole document width
-    for (i in 0:8) {
-      wb$merge_cells(dims = str_glue("A{row_idx+i}:{doc_width}{row_idx+i}"))
-    }
+  form_descr_intro <- stdatadictEnv$i18n_dd$t("form_descr_intro")
+  add_paragraph(wb, form_descr_intro, row = row_idx)
 
-    test_two_rows <- function(text) {
-      if (round(nchar(text) * 0.86) > 18 + 80 + 18 * (col2int(doc_width) - 2)) {
-        return(TRUE)
-      } else {
-        return(FALSE)
-      }
-    }
+  visit_form_descr <-
+    fmt_txt(stdatadictEnv$i18n_dd$t("visit_forms_descr_item"), bold = TRUE) +
+    fmt_txt(" ") +
+    fmt_txt(stdatadictEnv$i18n_dd$t("visit_forms_descr"))
+  add_paragraph(wb, visit_form_descr, row = row_idx + 1)
 
-    # form type intro
-    text <- stdatadictEnv$i18n_dd$t("form_descr_intro")
-    if (test_two_rows(text)) l2rows <- append(l2rows, row_idx)
+  casenode_form_descr <-
+    fmt_txt(stdatadictEnv$i18n_dd$t("casenode_forms_descr_item"), bold = TRUE) +
+    fmt_txt(" ") +
+    fmt_txt(stdatadictEnv$i18n_dd$t("casenode_forms_descr"))
+  add_paragraph(wb, casenode_form_descr, row = row_idx + 2)
 
-    wb$add_data(
-      x = paste(fmt_txt(text, italic = TRUE)),
-      dims = str_glue("A{row_idx}")
-    )
+  subform_descr <-
+    fmt_txt(stdatadictEnv$i18n_dd$t("subforms_descr_item"), bold = TRUE) +
+    fmt_txt(" ") +
+    fmt_txt(stdatadictEnv$i18n_dd$t("subforms_descr"))
+  add_paragraph(wb, subform_descr, row = row_idx+ 3)
 
-    # visit forms
-    text1 <- stdatadictEnv$i18n_dd$t("visit_forms_descr_item")
-    text2 <- stdatadictEnv$i18n_dd$t("visit_forms_descr")
+  format_empty_row(wb, row = row_idx + 4, doc_width = doc_width)
 
-    if (test_two_rows(paste(text1, text2))) l2rows <- append(l2rows, row_idx + 1)
+  form_sheet_descr <- fmt_txt(stdatadictEnv$i18n_dd$t("form_items_sheet_descr"),
+                              italic = TRUE)
+  add_paragraph(wb, form_sheet_descr, row = row_idx + 5)
 
-    wb$add_data(
-      x = paste(fmt_txt(text1, bold = TRUE), fmt_txt(" "), fmt_txt(text2)),
-      dims = str_glue("A{row_idx+1}")
-    )
+  hidden_descr <- fmt_txt(stdatadictEnv$i18n_dd$t("hidden_descr"), italic = TRUE)
+  add_paragraph(wb, hidden_descr, row = row_idx + 6)
 
-    # casenode forms
-    text1 <- stdatadictEnv$i18n_dd$t("casenode_forms_descr_item")
-    text2 <- stdatadictEnv$i18n_dd$t("casenode_forms_descr")
+  format_empty_row(wb, row = row_idx + 7, doc_width = doc_width)
 
-    if (test_two_rows(paste(text1, text2))) l2rows <- append(l2rows, row_idx + 2)
-
-    wb$add_data(
-      x = paste(fmt_txt(text1, bold = TRUE), fmt_txt(" "), fmt_txt(text2)),
-      dims = str_glue("A{row_idx+2}")
-    )
-
-    # subforms
-    text1 <- stdatadictEnv$i18n_dd$t("subforms_descr_item")
-    text2 <- stdatadictEnv$i18n_dd$t("subforms_descr")
-
-    if (test_two_rows(paste(text1, text2))) l2rows <- append(l2rows, row_idx + 3)
-
-    wb$add_data(
-      x = paste(fmt_txt(text1, bold = TRUE), fmt_txt(" "), fmt_txt(text2)),
-      dims = str_glue("A{row_idx+3}")
-    )
-
-    # form item sheets description
-    text <- stdatadictEnv$i18n_dd$t("form_items_sheet_descr")
-
-    if (test_two_rows(text)) l2rows <- append(l2rows, row_idx + 5)
-
-    wb$add_data(
-      x = paste(fmt_txt(text, italic = TRUE)),
-      dims = str_glue("A{row_idx+5}")
-    )
-
-    # hidden description -------------------------------------------------------
-    text <- stdatadictEnv$i18n_dd$t("hidden_descr")
-    if (test_two_rows(text)) l2rows <- append(l2rows, row_idx + 7)
-
-    wb$add_data(
-      x = paste(fmt_txt(text, italic = TRUE)),
-      dims = str_glue("A{row_idx+7}")
-    )
-
-    # does some text need two lines?
-    if (length(l2rows > 0)) {
-      wb$set_row_heights(rows = l2rows, heights = 29)
-    }
-
-    wb$set_cell_style(
-      dims = str_glue("A{row_idx}:{doc_width}{row_idx+7}"),
-      style = wb$styles_mgr$get_xf_id("text_area")
-    )
-
-    row_idx <- row_idx + 9
+  row_idx <- row_idx + 8
   }
 
   # "Forms at Visits" ----------------------------------------------------------

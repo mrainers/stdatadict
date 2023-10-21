@@ -223,7 +223,7 @@ style_datadict <- function(wb, theme_name = stdatadictEnv$use_color_theme) {
     subtitle = list(indent = 1),
     as_of_date = list(indent = 1),
     heading_1 = list(horizontal = "center"),
-    text_area = list(wrap_text = TRUE),
+    text_area = list(wrap_text = TRUE, vertical = "top"),
     form_overview_section = list(horizontal = "center"),
     table_head = list(wrap_text = TRUE, horizontal = "center"),
     visit_names = list(wrap_text = TRUE, horizontal = "center"),
