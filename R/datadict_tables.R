@@ -313,13 +313,11 @@ create_subforms <- function(questions) {
 #' @param questions the refined "qs" data table from secutrial export
 #' @param items the refined "is" data table from secutrial export
 #' @param vallabs the refined "cl" data table from secutrial export
-#' @param form_order tibble with column "formtablename" sorted in it's original
-#'     order.
 #'
 #' @return list of tibbles that represent a form with their containing
 #'     variables, each.
 #' @noRd
-create_formitems <- function(questions, items, vallabs, form_order) {
+create_formitems <- function(questions, items, vallabs) {
   # only mainform questions
   mainform_questions <- questions %>%
     filter(!.data$is_subform)
@@ -377,8 +375,7 @@ create_formitems <- function(questions, items, vallabs, form_order) {
 
   # split by mainform
   formitems_combined %>%
-    dplyr::nest_by(.data$mainform) %>%
-    arrange(match(.data$mainform, form_order$formtablename)) %>%
+    tidyr::nest(.by = .data$mainform) %>%
     tibble::deframe()
 }
 
@@ -470,7 +467,7 @@ create_datadict_tables <- function(st_metadata, ...) {
   intermediates$sub_forms <- sub_forms
   datadict_tables$form_overview$sub_forms <- sub_forms
 
-  form_items <- create_formitems(questions, items, vallabs, form_order)
+  form_items <- create_formitems(questions, items, vallabs)
   datadict_tables$form_items <- form_items
 
   datadict_tables
@@ -479,9 +476,9 @@ create_datadict_tables <- function(st_metadata, ...) {
 #' Add Data To Form Item Tables
 #'
 #' @description
-#' Wrapper function to join a data set with the form item tables. It combines
-#' all tables in datadict_tables$form_items, and adds the additional data with
-#' dplyrs `inner_join()` function.
+#' Wrapper function to join a data set or a list of data sets with the form item
+#' tables. It combines all tables in datadict_tables$form_items, and adds the
+#' additional data with dplyrs `inner_join()` function.
 #'
 #' `mainform` is the key variable to match by form name.
 #'
@@ -496,7 +493,8 @@ create_datadict_tables <- function(st_metadata, ...) {
 #' - `vartype_col` = Type
 #'
 #' @param datadict_tables table list, generated with [create_datadict_tables()]
-#' @param data data frame to be joined with form_item tables of datadict_tables
+#' @param data data frame or list of data framed to be joined with form_item
+#'    tables of datadict_tables
 #' @param ... <[`dynamic-dots`][rlang::dyn-dots]> additional options to pass to
 #'     [dplyr::left_join()]
 #'
@@ -525,29 +523,125 @@ create_datadict_tables <- function(st_metadata, ...) {
 #' datadict_tables <- join_with_form_items(datadict_tables, extra_data)
 #' }
 join_with_form_items <- function(datadict_tables, data, ...) {
-  # translate columns of data frame
-  data_transl <- data %>%
-    dplyr::rename_with(~ stdatadictEnv$i18n_dd$t(.x) %>% suppressWarnings(),
-      .cols = -any_of("mainform")
-    )
-
   # if the 'relationship' parameter is not set, set it to "many-to-one"
   dots <- rlang::list2(...)
   if (!("relationship" %in% names(dots))) {
     dots$relationship <- "many-to-one"
   }
 
-  # get order of the form_items elements
-  form_items_order <- names(datadict_tables$form_items)
+  # if data is a single data frame, put it in a list
+  if(is.data.frame(data)) data <- list(data)
 
-  # join form_items with data
-  datadict_tables$form_items <- datadict_tables$form_items %>%
+  # translate columns of data frame
+  data_transl <- data %>%
+    map(~ .x %>%
+          dplyr::rename_with(~ stdatadictEnv$i18n_dd$t(.x) %>%
+                               suppressWarnings(),
+                             .cols = -any_of("mainform")
+          )
+    )
+
+  # put all form_item tables together
+  form_items_combined <- datadict_tables$form_items %>%
     tibble::enframe(name = "mainform") %>%
-    tidyr::unnest(cols = c("value")) %>%
-    rlang::exec("left_join", x = ., y = data_transl, !!!dots) %>%
-    dplyr::nest_by(.data$mainform) %>%
-    arrange(match(.data$mainform, form_items_order)) %>%
+    tidyr::unnest(cols = c("value"))
+
+  # join data tables to form items
+  form_items_joined <- purrr::reduce(
+    .x = data_transl,
+    .f = ~ .x %>% rlang::exec("left_join", x = ., y = .y, !!!dots),
+    .init = form_items_combined
+  )
+
+  # if some data tables have the same column names the join has produced new
+  # column names with the appendixes ".x", ".y" etc. Unite those columns into one
+  # common variables in data_transl but not in form_items
+
+  # don't unite the names that already exist in form_items, except from "Scope"
+  form_item_names <- names(form_items_combined)
+
+  unite_vars <- data_transl %>%
+    map(~ names(.) %>% setdiff(form_item_names)) %>%
+    unlist() %>%
+    tibble::tibble(var = .) %>%
+    dplyr::count(.data$var) %>%
+    filter(.data$n > 1) %>%
+    pull("var") %>%
+    append(intersect(form_item_names, "Scope"))
+
+  form_items_joinedclean <- purrr::reduce(
+    .x = unite_vars,
+    .f = ~ .x %>% tidyr::unite({{ .y }}, starts_with(.y), sep = ", ", na.rm = TRUE),
+    .init = form_items_joined
+  )
+
+  print("vier")
+
+  datadict_tables$form_items <- form_items_joinedclean %>%
+    tidyr::nest(.by = .data$mainform) %>%
     tibble::deframe()
+
+  datadict_tables
+}
+
+
+#' Add Variable Scopes To Form Item Tables
+#'
+#' This functions joins a "Scope" variable with the form item tables in
+#' "data_dict_tables". If form item tables already have a Scope variable, the
+#' content of already existing and new Scope variable be concatenated.
+#'
+#' @details
+#' A Scope table is a nested table with the following format:
+#' \describe{
+#'    \item{Scope}{ID String of the variable Scope}
+#'    \item{additional Scope Information}{Variables that describe the Scope, such
+#'        as Scope Label/Name, Description, etc.}
+#'    \item{data}{a table containing variable names and other identifying
+#'        variables to which the Scope belongs (joining key variables)}
+#' }
+#'
+#'
+#' @param datadict_tables table list, generated with [create_datadict_tables()]
+#' @param scope "Scope Table" (see Details) or list of Scope tables.
+#'
+#' @return datadict_tables list where a Scope variable is added to form_item
+#'      tables.
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' datadict_tables <- join_scopes(datadict_tables, datapkg_pop_scope)
+#' }
+join_scopes <- function(datadict_tables, scope) {
+  if (is.data.frame(scope)) scope <- list(scope)
+
+  scope_data <- scope %>%
+    map(~ .x %>%
+          select("Scope", "data") %>%
+          tidyr::unnest(cols = "data"))
+
+  while (!purrr::is_empty(scope_data)) {
+    # get translated variable names that will be used for table join
+    by_vars <- scope_data[[1]] %>%
+      select(-"Scope") %>%
+      dplyr::rename_with(~ stdatadictEnv$i18n_dd$t(.x) %>%
+                           suppressWarnings(),
+                         .cols = -any_of("mainform")
+      ) %>%
+      names()
+
+    # join all data tables that have the same (join) variables as the first
+    # element.
+    cat("Join Scopes by", paste(shQuote(by_vars), collapse = ", "), "\n")
+    datadict_tables <- scope_data %>%
+      purrr::keep(~ setequal(names(.), names(scope_data[[1]]))) %>%
+      join_with_form_items(datadict_tables = datadict_tables, data = ., by = by_vars)
+
+    # Those tables who have different variables, repeat procedure in the next round.
+    scope_data <- scope_data %>%
+      purrr::discard(~ setequal(names(.), names(scope_data[[1]])))
+  }
 
   datadict_tables
 }

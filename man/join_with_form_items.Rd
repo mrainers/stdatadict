@@ -9,7 +9,8 @@ join_with_form_items(datadict_tables, data, ...)
 \arguments{
 \item{datadict_tables}{table list, generated with \code{\link[=create_datadict_tables]{create_datadict_tables()}}}
 
-\item{data}{data frame to be joined with form_item tables of datadict_tables}
+\item{data}{data frame or list of data framed to be joined with form_item
+tables of datadict_tables}
 
 \item{...}{<\code{\link[rlang:dyn-dots]{dynamic-dots}}> additional options to pass to
 \code{\link[dplyr:mutate-joins]{dplyr::left_join()}}}
@@ -18,9 +19,9 @@ join_with_form_items(datadict_tables, data, ...)
 datadict_tables with joined data to the form item tables
 }
 \description{
-Wrapper function to join a data set with the form item tables. It combines
-all tables in datadict_tables$form_items, and adds the additional data with
-dplyrs \code{inner_join()} function.
+Wrapper function to join a data set or a list of data sets with the form item
+tables. It combines all tables in datadict_tables$form_items, and adds the
+additional data with dplyrs \code{inner_join()} function.
 
 \code{mainform} is the key variable to match by form name.
 

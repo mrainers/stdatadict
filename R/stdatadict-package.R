@@ -23,7 +23,6 @@
 #' @importFrom dplyr summarise
 #' @importFrom dplyr ungroup
 #' @importFrom magrittr %>%
-#' @importFrom methods is
 #' @importFrom openxlsx2 col2int
 #' @importFrom openxlsx2 create_border
 #' @importFrom openxlsx2 create_fill

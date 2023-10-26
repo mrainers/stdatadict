@@ -56,7 +56,7 @@ calc_colswidth <- function(wb, sheet = current_sheet(), cols = 1) {
   sheet_order <- openxlsx2::wb_get_order(wb)
   sheet_names <- wb$get_sheet_names()
 
-  if (is(sheet, "openxlsx2_waiver")) {
+  if (isa(sheet, "openxlsx2_waiver")) {
     sheet_idx <- wb$.__enclos_env__$private$current_sheet
   } else if (is.character(sheet)) {
     sheet_idx <- match(sheet, sheet_names)
