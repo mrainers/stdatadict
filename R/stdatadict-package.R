@@ -56,6 +56,7 @@
 #' @importFrom stringr str_starts
 #' @importFrom stringr str_sub
 #' @importFrom stringr str_subset
+#' @importFrom tibble tibble
 #' @importFrom tidyr replace_na
 #' @importFrom withr local_options
 ## usethis namespace: end
