@@ -1,6 +1,6 @@
 Package: stdatadict
 Title: Create Data Dictionary or Variable Selection File from SecuTrial Export
-Version: 0.0.0.9203
+Version: 0.1.0
 Authors@R: 
     person("Miriam", "Rainers", , "miriam.rainers@med.uni-goettingen.de", 
            role = c("aut", "cre"),
