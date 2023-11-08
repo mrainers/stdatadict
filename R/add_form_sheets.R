@@ -34,7 +34,8 @@ add_form_sheets <- function(wb, datadict_tables, var_select = FALSE) {
   form_items <- datadict_tables$form_items
 
   doc_width <- form_items[[1]] %>%
-    select(-any_of(c("hidden", "select"))) %>%
+    names() %>%
+    setdiff(c("hidden", "select_col", stdatadictEnv$i18n_dd$t("select_col"))) %>%
     length() %>%
     `+`(var_select) %>%
     int2col()
@@ -92,9 +93,7 @@ add_form_sheets <- function(wb, datadict_tables, var_select = FALSE) {
       ### add var_select stuff -------------------------------------------------
 
       if (var_select) {
-        select_font_color <- stdatadictEnv$use_color_theme %>%
-          get_color_theme() %>%
-          .$font_select_column
+        select_font_color <- get_color_theme()$font_select_column
 
         # add "select entire form?" question
         wb$add_data(x = stdatadictEnv$i18n_dd$t("select_entire_form"),
@@ -126,12 +125,43 @@ add_form_sheets <- function(wb, datadict_tables, var_select = FALSE) {
                           vertical = "center",
         )
 
-        # need to add a select column to data?
-        if (stdatadictEnv$i18n_dd$t("select_col") %notin% names(.x)) {
-          .x <- .x %>%
-            mutate(!!stdatadictEnv$i18n_dd$t("select_col") := as.character(str_glue(
-              'IF({doc_width}4="{stdatadictEnv$i18n_dd$t("select_yes")}","X","")'
+        # add named region for the select entire form answer
+        wb$add_named_region(dims = str_glue("{doc_width}4"),
+                            name = "all_form",
+                            local_sheet = TRUE
+        )
+
+        # add a select column to data, if it doesn't exist.
+        yes <- stdatadictEnv$i18n_dd$t("select_yes")
+        select_col <- stdatadictEnv$i18n_dd$t("select_col")
+
+        if ("select_col" %in% names(.x)) {
+          .x <- .x %>% rename(!!select_col := "select_col")
+        }
+
+        if (select_col %notin% names(.x)) {
+
+          # does the form item table has a "Scope" variable? If so, add Scope
+          # rules to the selection formula.
+          if ("Scope" %in% names(.x)) {
+            .x <- .x %>%
+              rowwise() %>%
+              mutate(!!select_col := if_else(
+                stringr::str_trim(.data$Scope) != "",
+                .data$Scope %>%
+                  stringr::str_split_1(", ") %>%
+                  clean_region_name() %>%
+                  str_c(collapse = ",") %>%
+                  { str_glue('IF(OR(all_form="{yes}",{.}),"X","")') },
+                as.character(str_glue('IF(all_form="{yes}","X","")')),
+              )) %>%
+              ungroup()
+          } else {
+            .x <- .x %>%
+              mutate(!!select_col := as.character(str_glue(
+                'IF(all_form="{yes}","X","")'
               )))
+          }
         }
 
         wb$set_row_heights(rows = 4, heights = 23)
@@ -174,6 +204,7 @@ add_form_sheets <- function(wb, datadict_tables, var_select = FALSE) {
 
       # identify rows, that belong to the same question
       qs_groups <- .x %>%
+        ungroup() %>%
         rename(qs = 2) %>%
         mutate(question_nr = cumsum(.data$qs != dplyr::lag(.data$qs) |
           dplyr::row_number() == 1))
@@ -204,9 +235,7 @@ add_form_sheets <- function(wb, datadict_tables, var_select = FALSE) {
         filter(as.logical(.data$hidden)) %>%
         dplyr::pull(.data$row_nr)
 
-      hidden_font_color <- stdatadictEnv$use_color_theme %>%
-        get_color_theme() %>%
-        .$font_hidden
+      hidden_font_color <- get_color_theme()$font_hidden
 
       for (row in hidden) {
         wb$add_font(

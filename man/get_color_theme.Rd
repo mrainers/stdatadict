@@ -4,11 +4,13 @@
 \alias{get_color_theme}
 \title{Get Data Dictionary Color Theme}
 \usage{
-get_color_theme(name)
+get_color_theme(name = NULL)
 }
 \arguments{
 \item{name}{of color theme. Use \code{\link[=ls_color_themes]{ls_color_themes()}} to list all currently
-available themes.}
+available themes. If name = NULL (Default), the function returns the
+currently active color theme. Use \code{\link[=active_color_theme]{active_color_theme()}} to get the name
+of the active color theme.}
 }
 \value{
 named list with the colors defined in the color theme
@@ -17,5 +19,6 @@ named list with the colors defined in the color theme
 Get Data Dictionary Color Theme
 }
 \examples{
+get_color_theme()
 get_color_theme("purpur")
 }

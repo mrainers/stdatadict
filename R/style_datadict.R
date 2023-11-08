@@ -267,7 +267,7 @@ style_datadict <- function(wb, theme_name = stdatadictEnv$use_color_theme) {
     table_head = list(wrap_text = TRUE, horizontal = "center"),
     visit_names = list(wrap_text = TRUE, horizontal = "center"),
     select_column_head = list(horizontal = "center"),
-    select_column = list(horizontal = "center"),
+    select_column = list(horizontal = "center", vertical = "center"),
     select_all_q = list(horizontal = "right", vertical = "center"),
     select_all_a = list(horizontal = "center", vertical = "center")
   )

@@ -219,6 +219,13 @@ add_scope_selection <- function(wb,
     style = wb$styles_mgr$get_xf_id("form_sheet_table_col")
   )
 
+  # wrap text in table
+  wb$add_cell_style(
+    dims = dims_data,
+    wrap_text = TRUE,
+    vertical = "top"
+  )
+
   # Add styles for select column
     select_col_idx <- which(colnames(scope_sel) == select_col)
 
@@ -232,13 +239,6 @@ add_scope_selection <- function(wb,
       dims = wb_dims(x = scope_sel, cols = select_col, from_row = row),
       style = wb$styles_mgr$get_xf_id("select_column")
     )
-
-  # wrap text in table
-  wb$add_cell_style(
-    dims = dims_data,
-    wrap_text = TRUE,
-    vertical = "top"
-  )
 
   # add named region
   wb$add_named_region(sheet = sheet,

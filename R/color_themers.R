@@ -69,17 +69,35 @@ ls_color_themes <- function() {
   invisible(names(stdatadictEnv$color_themes))
 }
 
+
+#' Get The Name Of The Active Color Theme
+#'
+#' @return (character) color theme name
+#' @export
+#'
+#' @examples
+#' active_color_theme()
+active_color_theme <- function() {
+  stdatadictEnv$use_color_theme
+}
+
 #' Get Data Dictionary Color Theme
 #'
 #' @param name of color theme. Use [ls_color_themes()] to list all currently
-#'     available themes.
+#'     available themes. If name = NULL (Default), the function returns the
+#'     currently active color theme. Use [active_color_theme()] to get the name
+#'     of the active color theme.
 #'
 #' @return named list with the colors defined in the color theme
 #' @export
 #'
-#' @examples get_color_theme("purpur")
-get_color_theme <- function(name) {
-  if(!(name %in% names(stdatadictEnv$color_themes))) {
+#' @examples
+#' get_color_theme()
+#' get_color_theme("purpur")
+get_color_theme <- function(name = NULL) {
+  if (is.null(name)) name <- stdatadictEnv$use_color_theme
+
+  if (!(name %in% names(stdatadictEnv$color_themes))) {
     stop(paste0("There is no color theme with the name ", name, "."))
   }
 

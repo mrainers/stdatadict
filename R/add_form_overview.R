@@ -172,9 +172,7 @@ add_form_overview <- function(wb,
       filter(as.logical(.data$hidden)) %>%
       dplyr::pull(.data$row_nr)
 
-    hidden_font_color <- stdatadictEnv$use_color_theme %>%
-      get_color_theme() %>%
-      .$font_hidden
+    hidden_font_color <- get_color_theme()$font_hidden
 
     for (row in hidden) {
       wb$add_font(
