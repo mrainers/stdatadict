@@ -147,3 +147,47 @@ get_font_attributes <- function(wb, name) {
     map(~ openxlsx2::xml_attr(font_style_xml, "font", .x)[[1]]) %>%
     purrr::set_names(font_style_nodes)
 }
+
+
+#' Add A Variable Select Settings Worksheet
+#'
+#' @description
+#' This worksheet holds lists for drop-down menus. It is initiated with the
+#' list "Yes" and "No" list, which is used for the "select entire form" and other
+#' yes/no questions.
+#'
+#' Furthermore it stores which variable Scopes are selected as a boolean value.
+#' Those values can be referenced by named region, which are named after the
+#' corresponding variable scope.
+#'
+#' @param wb a wbWorkbook object
+#' @param visible should the "VarSelect Settings" worksheet be visible?
+#'    Default = FALSE
+#'
+#' @return invisibly a wbWorkbook object with the worksheet "VarSelect Settings"
+#'    as the first worksheet.
+#' @noRd
+add_varselect_settings <- function(wb, visible = FALSE) {
+  # get current worksheet
+
+  current_sheet <- wb$.__enclos_env__$private$current_sheet
+
+  insert_worksheet(wb, sheet = "VarSelect Settings", visible = visible)
+
+  row_idx = 1
+
+  # add Yes or No option list
+  wb$add_data(x = "Yes/No Options", dims = "A1")
+  wb$add_named_style(dims = "A1", name = "Title")
+
+  wb$add_data(x = stdatadictEnv$i18n_dd$t("select_yes"), dims = "A2")
+  wb$add_data(x = stdatadictEnv$i18n_dd$t("select_no"), dims = "A3")
+
+  wb$add_named_region(dims = "A2:A3", name = "YesNo")
+
+  # wb$set_sheet_visibility(sheet = "VarSelect Settings", visible = visible)
+
+  wb$.__enclos_env__$private$current_sheet <- current_sheet
+
+  invisible(wb)
+}

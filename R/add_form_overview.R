@@ -69,7 +69,7 @@ add_form_overview <- function(wb,
 
   # add white row
   if (!is.null(c(title, subtitle, as_of_date))) {
-    format_empty_row(wb, row = row_idx, doc_width = doc_width)
+    add_empty_row(wb, row = row_idx, doc_width = doc_width)
     row_idx <- row_idx + 1
   }
 
@@ -79,7 +79,7 @@ add_form_overview <- function(wb,
   row_idx <- row_idx + 1
 
   # add white row
-  format_empty_row(wb, row = row_idx, doc_width = doc_width)
+  add_empty_row(wb, row = row_idx, doc_width = doc_width)
   row_idx <- row_idx + 1
 
   # add descriptions
@@ -106,7 +106,7 @@ add_form_overview <- function(wb,
     fmt_txt(stdatadictEnv$i18n_dd$t("subforms_descr"))
   add_paragraph(wb, subform_descr, row = row_idx+ 3)
 
-  format_empty_row(wb, row = row_idx + 4, doc_width = doc_width)
+  add_empty_row(wb, row = row_idx + 4, doc_width = doc_width)
 
   form_sheet_descr <- fmt_txt(stdatadictEnv$i18n_dd$t("form_items_sheet_descr"),
                               italic = TRUE)
@@ -115,7 +115,7 @@ add_form_overview <- function(wb,
   hidden_descr <- fmt_txt(stdatadictEnv$i18n_dd$t("hidden_descr"), italic = TRUE)
   add_paragraph(wb, hidden_descr, row = row_idx + 6)
 
-  format_empty_row(wb, row = row_idx + 7, doc_width = doc_width)
+  add_empty_row(wb, row = row_idx + 7, doc_width = doc_width)
 
   row_idx <- row_idx + 8
   }

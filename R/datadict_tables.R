@@ -575,8 +575,6 @@ join_with_form_items <- function(datadict_tables, data, ...) {
     .init = form_items_joined
   )
 
-  print("vier")
-
   datadict_tables$form_items <- form_items_joinedclean %>%
     tidyr::nest(.by = .data$mainform) %>%
     tibble::deframe()

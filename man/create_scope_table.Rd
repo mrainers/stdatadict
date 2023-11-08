@@ -4,13 +4,13 @@
 \alias{create_scope_table}
 \title{Create a Scope Table}
 \usage{
-create_scope_table(data, scope, ...)
+create_scope_table(data, scopeid, ...)
 }
 \arguments{
 \item{data}{a data frame containing all variable identifiers (join keys) that
 belong to the scope.}
 
-\item{scope}{(character) name/ID of the Scope.}
+\item{scopeid}{(character) name/ID of the Scope.}
 
 \item{...}{<\code{\link[rlang:dyn-dots]{dynamic-dots}}> named list containing
 additional information about the variable Scope. This will be used as

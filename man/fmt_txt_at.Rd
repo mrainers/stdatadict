@@ -4,14 +4,16 @@
 \alias{fmt_txt_at}
 \title{Format Matched Strings In a Text.}
 \usage{
-fmt_txt_at(text, pattern, fmt_ops)
+fmt_txt_at(text, pattern, ...)
 }
 \arguments{
 \item{text}{(character) text that contains strings that should be formatted}
 
 \item{pattern}{regular expressions, or vector of regular expressions}
 
-\item{fmt_ops}{list of format options pass to \code{\link[openxlsx2:fmt_txt]{openxlsx2::fmt_txt()}}}
+\item{...}{<\code{\link[rlang:dyn-dots]{dynamic-dots}}> format options pass to
+\code{\link[openxlsx2:fmt_txt]{openxlsx2::fmt_txt()}}. Can also be a lists of format options that has the
+same length as \code{pattern}.}
 }
 \value{
 an openxlsx2 fmt_txt string
@@ -23,13 +25,12 @@ Format Matched Strings In a Text.
 shopping_list <- "apples x4, bag of flour, bag of sugar, milk x2"
 
 # format the word 'bag' bold
-fmt_txt_at(shopping_list, "\\\\bbag\\\\b", list(bold = TRUE))
+fmt_txt_at(shopping_list, "\\\\bbag\\\\b", bold = TRUE)
 
 # format the x<nr> green and bold and the "bag of" in italic
 fmt_txt_at(shopping_list,
            c("x\\\\d+", "\\\\bbag of\\\\b"),
-           list(list(bold = TRUE, color = openxlsx2::wb_color("green")),
-                list(italic = TRUE)
-               )
+           list(bold = TRUE, color = openxlsx2::wb_color("green")),
+           list(italic = TRUE)
            )
 }

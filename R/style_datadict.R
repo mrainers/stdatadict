@@ -67,6 +67,22 @@ style_datadict <- function(wb, theme_name = stdatadictEnv$use_color_theme) {
         bottom = "thick", bottom_color = wb_color(color_theme$bg_primary)
       )
     ),
+    # --- heading 2 ---
+    heading_2 = list(
+      fill_style = create_fill(
+        patternType = "solid",
+        fgColor = wb_color(color_theme$bg_h1)
+      ),
+      font_style = create_font(
+        sz = 18,
+        b = TRUE,
+        color = wb_color(color_theme$font_h1)
+      ),
+      border_style = create_border(
+        top    = "thick", top_color    = wb_color(color_theme$bg_primary), # maybe the border color should get it's own color definition
+        bottom = "thick", bottom_color = wb_color(color_theme$bg_primary)
+      )
+    ),
     # --- text area ---
     text_area = list(
       fill_style = create_fill(
@@ -198,6 +214,28 @@ style_datadict <- function(wb, theme_name = stdatadictEnv$use_color_theme) {
         left   = "thin", left_color   = wb_color(color_theme$border_select_column),
         right  = "thin", right_color  = wb_color(color_theme$border_select_column)
       )
+    ),
+    ### --- select all question ---
+    select_all_q = list(
+      fill_style = create_fill(
+        pattern_style = "solid",
+        fgColor = wb_color("white")
+      ),
+      font_style = create_font(
+        color = wb_color(color_theme$font_select_column),
+        sz = 14,
+        i = TRUE
+      ),
+      border_style = create_border()
+    ),
+    ### --- select all question ---
+    select_all_a = list(
+      fill_style = create_fill(),
+      font_style = create_font(
+        color = wb_color(color_theme$font_select_column),
+        b = TRUE
+      ),
+      border_style = create_border()
     )
   )
 
@@ -223,12 +261,15 @@ style_datadict <- function(wb, theme_name = stdatadictEnv$use_color_theme) {
     subtitle = list(indent = 1),
     as_of_date = list(indent = 1),
     heading_1 = list(horizontal = "center"),
+    heading_2 = list(horizontal = "center"),
     text_area = list(wrap_text = TRUE, vertical = "top"),
     section = list(horizontal = "center"),
     table_head = list(wrap_text = TRUE, horizontal = "center"),
     visit_names = list(wrap_text = TRUE, horizontal = "center"),
     select_column_head = list(horizontal = "center"),
-    select_column = list(horizontal = "center")
+    select_column = list(horizontal = "center"),
+    select_all_q = list(horizontal = "right", vertical = "center"),
+    select_all_a = list(horizontal = "center", vertical = "center")
   )
 
   cell_style_options <- cell_style_options_a %>%

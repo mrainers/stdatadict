@@ -300,7 +300,7 @@ add_asofdate <- function(wb,
                          row = 3,
                          doc_width = "G") {
   wb <- add_styled_line(wb = wb,
-                        x = x,
+                        x =  paste(stdatadictEnv$i18n_dd$t("as_of"), x),
                         style = "as_of_date",
                         sheet = sheet,
                         row = row,
@@ -324,7 +324,7 @@ add_asofdate <- function(wb,
 #' wb <- openxlsx2::wb_workbook()
 #' style_datadict(wb)
 #' wb$add_worksheet()
-#' add_heading1(wb, "My Subtitle")
+#' add_heading1(wb, "My Heading")
 add_heading1 <- function(wb,
                          x,
                          sheet = current_sheet(),
@@ -333,6 +333,37 @@ add_heading1 <- function(wb,
   wb <- add_styled_line(wb = wb,
                         x = x,
                         style = "heading_1",
+                        sheet = sheet,
+                        row = row,
+                        start_col = "A",
+                        doc_width = doc_width)
+
+  invisible(wb)
+}
+
+
+#' Add Heading 2
+#'
+#' @param x (character) The Heading text
+#' @param row in which row the heading should be added. Default = 1
+#' @inheritParams add_title
+#'
+#' @return A wbWorkbook, invisibly
+#' @export
+#'
+#' @examples
+#' wb <- openxlsx2::wb_workbook()
+#' style_datadict(wb)
+#' wb$add_worksheet()
+#' add_heading2(wb, "My Subheading")
+add_heading2 <- function(wb,
+                         x,
+                         sheet = current_sheet(),
+                         row = 1,
+                         doc_width = "G") {
+  wb <- add_styled_line(wb = wb,
+                        x = x,
+                        style = "heading_2",
                         sheet = sheet,
                         row = row,
                         start_col = "A",
@@ -449,8 +480,8 @@ add_paragraph <- function(wb,
 #' style_datadict(wb)
 #' wb$add_worksheet()
 #'
-#' format_empty_row(wb, row = 3)
-format_empty_row <- function(wb,
+#' add_empty_row(wb, row = 3)
+add_empty_row <- function(wb,
                           sheet = current_sheet(),
                           row = 1,
                           doc_width = "G") {
@@ -481,7 +512,9 @@ format_empty_row <- function(wb,
 #'
 #' @param text (character) text that contains strings that should be formatted
 #' @param pattern regular expressions, or vector of regular expressions
-#' @param fmt_ops list of format options pass to [openxlsx2::fmt_txt()]
+#' @param ... <[`dynamic-dots`][rlang::dyn-dots]> format options pass to
+#'    [openxlsx2::fmt_txt()]. Can also be a lists of format options that has the
+#'    same length as `pattern`.
 #'
 #' @return an openxlsx2 fmt_txt string
 #' @export
@@ -490,25 +523,26 @@ format_empty_row <- function(wb,
 #' shopping_list <- "apples x4, bag of flour, bag of sugar, milk x2"
 #'
 #' # format the word 'bag' bold
-#' fmt_txt_at(shopping_list, "\\bbag\\b", list(bold = TRUE))
+#' fmt_txt_at(shopping_list, "\\bbag\\b", bold = TRUE)
 #'
 #' # format the x<nr> green and bold and the "bag of" in italic
 #' fmt_txt_at(shopping_list,
 #'            c("x\\d+", "\\bbag of\\b"),
-#'            list(list(bold = TRUE, color = openxlsx2::wb_color("green")),
-#'                 list(italic = TRUE)
-#'                )
+#'            list(bold = TRUE, color = openxlsx2::wb_color("green")),
+#'            list(italic = TRUE)
 #'            )
-fmt_txt_at <- function(text, pattern, fmt_ops) {
+fmt_txt_at <- function(text, pattern, ...) {
   # find all strings that match the patterns
+
+  fmt_ops <- rlang::list2(...)
 
   fmt_pos <- text %>% stringr::str_locate_all(pattern)
 
-  # find all strings that don' match any pattern
+  # find all strings that don't match any pattern
   no_fmt_pos <- fmt_pos %>%
     purrr::reduce(rbind) %>%
     # sort by start column
-    {.[order(.[, "start"]),]} %>%
+    {if (nrow(.) > 1) .[order(.[, "start"]),] else .} %>%
     stringr::invert_match()
 
   # create table of all substrings and their styling options
@@ -530,5 +564,39 @@ fmt_txt_at <- function(text, pattern, fmt_ops) {
     rlang::exec("fmt_txt", x = str_sub(text, start, end), !!!fmts)
   }) %>%
     purrr::reduce(`+`)
+}
+
+
+#' Clean Excel Region Names
+#'
+#' Names for named regions have the following restrictions:
+#' - The first character of a name must be a letter or an underscore character (_).
+#' - Remaining characters in the name can be letters, numbers, periods, and
+#'   underscore characters.
+#' - Spaces are not allowed.
+#' - Names cannot be the same as a cell reference, such as Z$100, BIN9, or R1C1.
+#'
+#' Therefore this function
+#' - replaces all punctuation characters like "-" with "."
+#' - replaces all white spaces with "_"
+#' - inserts an underscore at the beginning if
+#'      - a name starts with anything else than a letter or underscore
+#'      - a name starts with "c<digit>"
+#'      - a name is a cell reference, such as "C1", "AB6R12"
+#'
+#' @param name (character or character vector) the name(s) of the named region
+#'
+#' @return a string (vector) of cleaned region names.
+#' @export
+#'
+#' @examples
+#' clean_region_name(c("foo-bar", "c19severity", "ad+b 4"))
+clean_region_name <- function(name) {
+  name %>%
+    str_replace_all("[^[:word:]\\s]+", ".") %>%
+    str_replace_all("\\s+", "_") %>%
+    str_replace("(^[^[:alpha:]_])", "_\\1") %>%
+    str_replace("(^c[:digit:])", "_\\1") %>%
+    str_replace("(^[:alpha:]{1,3}[:digit:]+[:alpha:]{0,3}[:digit:]*$)", "_\\1")
 }
 
