@@ -103,6 +103,9 @@ join_scopes <- function(datadict_tables, scope) {
 #' @param row number where to start the current Scope Selection, default = 1
 #' @param doc_width (single character or numeric) if a title is given, up to which
 #'    column should the section title spread? Default = "G"
+#' @param select_all (logical) Should a "select all?" Question added to the
+#'    scope selection table? Default = TRUE ("Select all" question is added only
+#'    if the table contains more than one scope)
 #'
 #' @return wbWorkbook, invisibly
 #' @export
@@ -122,7 +125,8 @@ add_scope_selection <- function(wb,
                                 title = NULL,
                                 sheet = current_sheet(),
                                 row = 1,
-                                doc_width = "G"){
+                                doc_width = "G",
+                                select_all = TRUE){
 
   # init "VarSelect Settings" Sheet if it doesn't exist.
   if ("VarSelect Settings" %notin% wb$get_sheet_names()) {
@@ -157,7 +161,7 @@ add_scope_selection <- function(wb,
   }
 
   ### if the scope table has multiple scopes
-  if (nrow(scope) > 1) {
+  if (nrow(scope) > 1 & select_all) {
     # add a select all option
     wb$add_data(sheet = sheet,
                 x = stdatadictEnv$i18n_dd$t("select_all"),

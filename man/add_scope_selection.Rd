@@ -10,7 +10,8 @@ add_scope_selection(
   title = NULL,
   sheet = current_sheet(),
   row = 1,
-  doc_width = "G"
+  doc_width = "G",
+  select_all = TRUE
 )
 }
 \arguments{
@@ -27,6 +28,10 @@ If title = NULL, no title will be created.}
 
 \item{doc_width}{(single character or numeric) if a title is given, up to which
 column should the section title spread? Default = "G"}
+
+\item{select_all}{(logical) Should a "select all?" Question added to the
+scope selection table? Default = TRUE ("Select all" question is added only
+if the table contains more than one scope)}
 }
 \value{
 wbWorkbook, invisibly

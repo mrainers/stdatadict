@@ -145,6 +145,7 @@ add_form_sheets <- function(wb, datadict_tables, var_select = FALSE) {
           # rules to the selection formula.
           if ("Scope" %in% names(.x)) {
             .x <- .x %>%
+              mutate(Scope = tidyr::replace_na(.data$Scope, "")) %>%
               rowwise() %>%
               mutate(!!select_col := if_else(
                 stringr::str_trim(.data$Scope) != "",
