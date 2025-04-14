@@ -218,7 +218,7 @@ style_datadict <- function(wb, theme_name = stdatadictEnv$use_color_theme) {
     ### --- select all question ---
     select_all_q = list(
       fill_style = create_fill(
-        pattern_style = "solid",
+        patternType = "solid",
         fgColor = wb_color("white")
       ),
       font_style = create_font(
@@ -230,7 +230,7 @@ style_datadict <- function(wb, theme_name = stdatadictEnv$use_color_theme) {
     ),
     ### --- select all question ---
     select_all_a = list(
-      fill_style = create_fill(),
+      fill_style = create_fill(patternType = "none"),
       font_style = create_font(
         color = wb_color(color_theme$font_select_column),
         b = TRUE
