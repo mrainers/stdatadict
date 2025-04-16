@@ -13,6 +13,7 @@ hidden_descr,"Grayed out lines are hidden elements in Secutrial. This means that
 visit_forms_subsection,Forms at Visits,Formulare bei Visiten
 casenode_forms_subsection,Casenode Forms,Casenode-Formulare
 subforms_subsection,Subforms / Repetition Groups,Unterformulare / Wiederholungsgruppen
+visitarm_labels,Visit Arms,Visitenarme
 form_not_available,No {formtype} available.,Keine {formtype} vorhanden.
 tables_row,Tables,Tabellen
 table_col,Table,Tabelle

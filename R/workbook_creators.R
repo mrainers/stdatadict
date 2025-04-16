@@ -1,3 +1,12 @@
+#' @export
+openxlsx2::wb_workbook
+
+#' @export
+openxlsx2::wb_add_worksheet
+
+#' @export
+openxlsx2::wb_add_data
+
 #' Insert a row in a sheet (emulated)
 #'
 #' @description

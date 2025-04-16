@@ -85,7 +85,7 @@ refine_vp <- function(vp) {
   vp %>%
     mutate(mnpvsno = replace_na(as.numeric(.data$mnpvsno), -1)) %>%
     filter(.data$mnpvsno == max(.data$mnpvsno)) %>%
-    select("mnpvisid", "mnpvislabel", "hidden")
+    select(any_of(c("mnpvisid", "visitarm", "mnpvislabel", "hidden")))
 }
 
 
@@ -255,15 +255,18 @@ refine_cl <- function(cl, studyid) {
 #' An 'X' in the cells marks, which forms are available at which visits.
 #' @noRd
 create_visitforms <- function(forms, visits, vpfs) {
+  if (!("visitarm" %in% names(visits))) visits$visitarm <- "X"
+
   forms %>%
     filter(.data$formtype == "visit") %>%
     left_join(vpfs %>% select(-any_of("hidden")), by = "formid") %>%
-    left_join(visits %>% select(-"hidden"), by = "mnpvisid") %>%
-    mutate(dummy = "X") %>%
+    left_join(visits %>% select(-any_of("hidden")), by = "mnpvisid") %>%
+    mutate(visitarm = tidyr::replace_na(visitarm, "X")) %>%
     tidyr::pivot_wider(
       id_cols = c("formtablename", "formname", "hidden"),
       names_from = "mnpvislabel",
-      values_from = "dummy"
+      values_from = "visitarm",
+      values_fn = ~ stringr::str_flatten(.x, ", ")
     ) %>%
     select(-any_of("NA")) %>%
     mutate(across(4:last_col(), replace_na, "-")) %>%
@@ -413,6 +416,7 @@ create_formitems <- function(questions, items, vallabs) {
 #'      ...$ visit_forms
 #'      ...$ casenode_forms
 #'      ...$ sub_forms
+#'      ...$ visitarms (only if the study contains multiple visit arms)
 #'     $ form_items
 #'      ...$ <form1>
 #'      ...$ <form2>
@@ -435,6 +439,22 @@ create_datadict_tables <- function(st_metadata, ...) {
 
   # refine metadata
   visits <- refine_vp(st_metadata$vp)
+
+  # if the study contains multiple visit arms, store them in a named string.
+  if ("visitarm" %in% names(visits)) {
+    visitarms <- visits$visitarm %>%
+      unique() %>%
+      setdiff(NA) %>%
+      setNames(letters[1:length(.)], .)
+
+    intermediates$visitarms <- visitarms
+    datadict_tables$form_overview$visitarms <- visitarms
+
+    # replace visit arm names by index letters
+    visits <- visits %>%
+      mutate(visitarm = visitarms[visits$visitarm])
+  }
+
   intermediates$visits <- visits
 
   forms <- refine_fs(st_metadata$fs, st_metadata$vpfs, studyid)
@@ -454,10 +474,11 @@ create_datadict_tables <- function(st_metadata, ...) {
   form_order <- get_formorder(forms)
   intermediates$form_order <- form_order
 
+
   # create form overview tables
   visit_forms <- create_visitforms(forms, visits, st_metadata$vpfs)
   intermediates$visit_forms <- visit_forms
-  datadict_tables$form_overview$visit_forms<- visit_forms
+  datadict_tables$form_overview$visit_forms <- visit_forms
 
   casenode_forms <- create_casenodeforms(forms)
   intermediates$casenode_forms <- casenode_forms
@@ -466,6 +487,13 @@ create_datadict_tables <- function(st_metadata, ...) {
   sub_forms <- create_subforms(questions)
   intermediates$sub_forms <- sub_forms
   datadict_tables$form_overview$sub_forms <- sub_forms
+
+  # put visitarms at last place in form_overview list.
+  if ("visitarms" %in% names(datadict_tables$form_overview)) {
+    datadict_tables$form_overview <- datadict_tables$form_overview[
+      c("visit_forms", "casenode_forms", "sub_forms", "visitarms")
+    ]
+  }
 
   form_items <- create_formitems(questions, items, vallabs)
   datadict_tables$form_items <- form_items

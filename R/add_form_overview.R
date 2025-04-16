@@ -190,7 +190,23 @@ add_form_overview <- function(wb,
     )
   }
 
-  row_idx <- row_idx + nrow(data) + 3
+  row_idx <- row_idx + nrow(data) + 2
+
+  # add visit arm labels
+  if (!is.null(datadict_tables$form_overview$visitarms)) {
+    visarm_legend <- datadict_tables$form_overview$visitarms %>%
+      paste(., names(.), sep = " = ", collapse = ", ")
+
+    text <- fmt_txt(
+      str_glue('{stdatadictEnv$i18n_dd$t("visitarm_labels")}:'), bold = TRUE) +
+      " " + visarm_legend
+
+    wb$add_data(x = text, dims = str_glue("C{row_idx}"))
+
+    row_idx <- row_idx + 2
+  }
+
+  row_idx <- row_idx + 1
 
   # casenode forms -------------------------------------------------------------
   # section title
