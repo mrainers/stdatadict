@@ -24,6 +24,7 @@ nested list of tibbles with the following structure:
  ...$ visit_forms
  ...$ casenode_forms
  ...$ sub_forms
+ ...$ visitarms (only if the study contains multiple visit arms)
 $ form_items
  ...$ <form1>
  ...$ <form2>

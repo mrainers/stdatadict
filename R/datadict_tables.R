@@ -261,7 +261,7 @@ create_visitforms <- function(forms, visits, vpfs) {
     filter(.data$formtype == "visit") %>%
     left_join(vpfs %>% select(-any_of("hidden")), by = "formid") %>%
     left_join(visits %>% select(-any_of("hidden")), by = "mnpvisid") %>%
-    mutate(visitarm = tidyr::replace_na(visitarm, "X")) %>%
+    mutate(visitarm = tidyr::replace_na(.data$visitarm, "X")) %>%
     tidyr::pivot_wider(
       id_cols = c("formtablename", "formname", "hidden"),
       names_from = "mnpvislabel",
@@ -445,7 +445,7 @@ create_datadict_tables <- function(st_metadata, ...) {
     visitarms <- visits$visitarm %>%
       unique() %>%
       setdiff(NA) %>%
-      setNames(letters[1:length(.)], .)
+      purrr::set_names(letters[1:length(.)], .)
 
     intermediates$visitarms <- visitarms
     datadict_tables$form_overview$visitarms <- visitarms
