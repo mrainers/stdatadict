@@ -19,65 +19,37 @@ This package builds upon the the following R packages:
 
 ### Prerequisites
 
-[Create a Personal Access Token in Gitlab](https://docs.gitlab.com/ee/user/profile/personal_access_tokens.html) with the scope: `read_api`.
-Save the token for later use.
-
 Install the `remotes` package.
 
 ``` r
 if (!rlang::is_installed("remotes")) install.packages("remotes")
 ```
 
-Install the development version of `openxlsx2`.   
-*The current stable version on
-CRAN (version 1.0) has a critical bug that is fixed in the development version.*
+### Installation from gitLab or gitHub (mirror repository)
 
-```r
-remotes::install_github("JanMarvin/openxlsx2")
-```
+Install `stdatadict` from the [gitlab repository](https://gitlab.gwdg.de/medinfpub/stdatadict) 
+repository with dependent packages.
 
-### Installation with install_gitlab()
-
-Install `stdatadict` from gitlab and dependent packages.
 ``` r
 library(remotes)
 
-install_gitlab(
-  repo = "medinf/kvf/kardio/dzhk/num-transferstelle/stdatadict",
-  host = "https://gitlab-pe.gwdg.de",
-  auth_token = "<YOUR_AUTH_TOKEN>",
-  dependencies = TRUE
-)
+install_git("https://gitlab.gwdg.de/medinfpub/stdatadict", dependencies = TRUE)
 ```
 
-You can also store your access token for later use as R's system environment variable.
-`install_gitlab()` then automatically uses the stored token for access to gitlab.
-```r
-Sys.setenv(GITLAB_PAT = "<YOUR_AUTH_TOKEN>")
-
-install_gitlab(
-  repo = "medinf/kvf/kardio/dzhk/num-transferstelle/stdatadict",
-  host = "https://gitlab-pe.gwdg.de",
-  dependencies = TRUE
-)
-```
-
-
-<!--  
-
-## Example
-
-This is a basic example which shows you how to solve a common problem:
+Install from the [github mirror repository](https://gitlab.gwdg.de/medinfpub/stdatadict) 
+repository with dependent packages.
 
 ``` r
-library(stdatadict)
-## basic example code
+library(remotes)
+
+install_github("mrainers/stdatadict", dependencies = TRUE)
 ```
 
--->
+
+
 <!--
 
-### Secutrial ExportOption Requirements
+## Secutrial ExportOption Requirements
 test
 -->
 
