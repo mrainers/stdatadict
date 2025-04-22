@@ -31,18 +31,14 @@ Install `stdatadict` from the [gitlab repository](https://gitlab.gwdg.de/medinfp
 repository with dependent packages.
 
 ``` r
-library(remotes)
-
-install_git("https://gitlab.gwdg.de/medinfpub/stdatadict", dependencies = TRUE)
+remotes::install_git("https://gitlab.gwdg.de/medinfpub/stdatadict", dependencies = TRUE)
 ```
 
 Install from the [github mirror repository](https://github.com/mrainers/stdatadict) 
 repository with dependent packages.
 
 ``` r
-library(remotes)
-
-install_github("mrainers/stdatadict", dependencies = TRUE)
+remotes::install_github("mrainers/stdatadict", dependencies = TRUE)
 ```
 
 
