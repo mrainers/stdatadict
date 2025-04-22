@@ -27,5 +27,3 @@ Imports:
     withr
 Suggests:
     kableExtra
-Remotes: 
-    JanMarvin/openxlsx2
