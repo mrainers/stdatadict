@@ -36,7 +36,7 @@ library(remotes)
 install_git("https://gitlab.gwdg.de/medinfpub/stdatadict", dependencies = TRUE)
 ```
 
-Install from the [github mirror repository](https://gitlab.gwdg.de/medinfpub/stdatadict) 
+Install from the [github mirror repository](https://github.com/mrainers/stdatadict) 
 repository with dependent packages.
 
 ``` r
