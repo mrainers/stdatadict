@@ -64,51 +64,26 @@
 <div class="section level3">
 <h3 id="prerequisites">Prerequisites<a class="anchor" aria-label="anchor" href="#prerequisites"></a>
 </h3>
-<p><a href="https://docs.gitlab.com/ee/user/profile/personal_access_tokens.html" class="external-link">Create a Personal Access Token in Gitlab</a> with the scope: <code>read_api</code>. Save the token for later use.</p>
 <p>Install the <code>remotes</code> package.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu">rlang</span><span class="fu">::</span><span class="fu"><a href="https://rlang.r-lib.org/reference/is_installed.html" class="external-link">is_installed</a></span><span class="op">(</span><span class="st">"remotes"</span><span class="op">)</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"remotes"</span><span class="op">)</span></span></code></pre></div>
-<p>Install the development version of <code>openxlsx2</code>.<br><em>The current stable version on CRAN (version 1.0) has a critical bug that is fixed in the development version.</em></p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"JanMarvin/openxlsx2"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
-<h3 id="installation-with-install_gitlab">Installation with install_gitlab()<a class="anchor" aria-label="anchor" href="#installation-with-install_gitlab"></a>
+<h3 id="installation-from-gitlab-or-github-mirror-repository">Installation from gitLab or gitHub (mirror repository)<a class="anchor" aria-label="anchor" href="#installation-from-gitlab-or-github-mirror-repository"></a>
 </h3>
-<p>Install <code>stdatadict</code> from gitlab and dependent packages.</p>
+<p>Install <code>stdatadict</code> from the <a href="https://gitlab.gwdg.de/medinfpub/stdatadict" class="external-link">gitlab repository</a> repository with dependent packages.</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://remotes.r-lib.org" class="external-link">remotes</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">install_git</span><span class="op">(</span><span class="st">"https://gitlab.gwdg.de/medinfpub/stdatadict"</span>, dependencies <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<p>Install from the <a href="https://gitlab.gwdg.de/medinfpub/stdatadict" class="external-link">github mirror repository</a> repository with dependent packages.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://remotes.r-lib.org" class="external-link">remotes</a></span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">install_gitlab</span><span class="op">(</span></span>
-<span>  repo <span class="op">=</span> <span class="st">"medinf/kvf/kardio/dzhk/num-transferstelle/stdatadict"</span>,</span>
-<span>  host <span class="op">=</span> <span class="st">"https://gitlab-pe.gwdg.de"</span>,</span>
-<span>  auth_token <span class="op">=</span> <span class="st">"&lt;YOUR_AUTH_TOKEN&gt;"</span>,</span>
-<span>  dependencies <span class="op">=</span> <span class="cn">TRUE</span></span>
-<span><span class="op">)</span></span></code></pre></div>
-<p>You can also store your access token for later use as R’s system environment variable. <code>install_gitlab()</code> then automatically uses the stored token for access to gitlab.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Sys.setenv.html" class="external-link">Sys.setenv</a></span><span class="op">(</span>GITLAB_PAT <span class="op">=</span> <span class="st">"&lt;YOUR_AUTH_TOKEN&gt;"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu">install_gitlab</span><span class="op">(</span></span>
-<span>  repo <span class="op">=</span> <span class="st">"medinf/kvf/kardio/dzhk/num-transferstelle/stdatadict"</span>,</span>
-<span>  host <span class="op">=</span> <span class="st">"https://gitlab-pe.gwdg.de"</span>,</span>
-<span>  dependencies <span class="op">=</span> <span class="cn">TRUE</span></span>
-<span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">install_github</span><span class="op">(</span><span class="st">"mrainers/stdatadict"</span>, dependencies <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <!--
 
-## Example
-
-This is a basic example which shows you how to solve a common problem:
-
-``` r
-library(stdatadict)
-## basic example code
-```
-
--->
-<!--
-
-### Secutrial ExportOption Requirements
+## Secutrial ExportOption Requirements
 test
 -->
 </div>
