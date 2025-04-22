@@ -83,4 +83,4 @@ library(stdatadict)
 
 ## License
 
-MIT License Copyright (c) 2023 stdatadict authors
+MIT License Copyright (c) 2025 Department of Medical Informatics - University Medical Center Göttingen
