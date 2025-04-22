@@ -8,7 +8,7 @@ variables:
 test:
   script:
     - mkdir -p $R_LIBS_USER $BUILD_LOGS_DIR
-    - R -e 'devtools::install_dev_deps(dep = T)'
+   # - R -e 'devtools::install_dev_deps(dep = T)'
    # - R -e 'check_result <- devtools::check(check_dir = Sys.getenv("CHECK_DIR")); check_result; if (check_result$status == 1) stop()'
 
   artifacts:
@@ -19,11 +19,11 @@ test:
   # a pages deploy
     - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
 
-#pages:
- # script:
-  #  - Rscript -e 'devtools::install()'
-  #  - Rscript -e 'pkgdown::build_site()'
-  #  - mv docs public
+pages:
+  script:
+    - Rscript -e 'devtools::install()'
+    - Rscript -e 'pkgdown::build_site()'
+    - mv docs public
 
   #artifacts:
    # paths:
