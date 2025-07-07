@@ -83,7 +83,9 @@ read_meta_file <- function(data_dir, file_name,
                        grouping_mark = ""
                      ),
                      escape_backslash = TRUE,
-                     escape_double = FALSE
+                     escape_double = FALSE,
+                     guess_max = Inf # some column may be almost completely NA
+
   )
 
   # undo warning suppression
