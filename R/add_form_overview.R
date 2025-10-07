@@ -177,6 +177,8 @@ add_form_overview <- function(wb,
     for (row in hidden) {
       wb$add_font(
         dims = wb_dims(x = data, rows = row, from_row = row_idx),
+        name = wb$get_base_font()$name$val,
+        size = wb$get_base_font()$size$val,
         color = wb_color(hidden_font_color)
       )
     }
@@ -223,7 +225,12 @@ add_form_overview <- function(wb,
     formtype <- stdatadictEnv$i18n_dd$t("casenode_forms_descr_item")
     text <- as.character(str_glue(stdatadictEnv$i18n_dd$t("form_not_available")))
     wb$add_data(x = text, dims = str_glue("A{row_idx}"))
-    wb$add_font(dims = str_glue("A{row_idx}"), italic = TRUE)
+    wb$add_font(
+      dims = str_glue("A{row_idx}"),
+      italic = TRUE,
+      name = wb$get_base_font()$name$val,
+      size = wb$get_base_font()$size$val
+      )
     wb$add_cell_style(dims = str_glue("A{row_idx}"), horizontal = "center")
 
   } else {
@@ -248,7 +255,9 @@ add_form_overview <- function(wb,
     for (row in hidden) {
       wb$add_font(
         dims = wb_dims(x = data, rows = row, from_row = row_idx),
-        color = wb_color(hidden_font_color)
+        color = wb_color(hidden_font_color),
+        name = wb$get_base_font()$name$val,
+        size = wb$get_base_font()$size$val
       )
     }
 
@@ -280,7 +289,12 @@ add_form_overview <- function(wb,
     formtype <- stdatadictEnv$i18n_dd$t("subforms_descr_item")
     text <- as.character(str_glue(stdatadictEnv$i18n_dd$t("form_not_available")))
     wb$add_data(x = text, dims = str_glue("A{row_idx}"))
-    wb$add_font(dims = str_glue("A{row_idx}"), italic = TRUE)
+    wb$add_font(
+      dims = str_glue("A{row_idx}"),
+      italic = TRUE,
+      name = wb$get_base_font()$name$val,
+      size = wb$get_base_font()$size$val
+    )
     wb$add_cell_style(dims = str_glue("A{row_idx}"), horizontal = "center")
 
   } else {
@@ -305,7 +319,9 @@ add_form_overview <- function(wb,
     for (row in hidden) {
       wb$add_font(
         dims = wb_dims(x = data, rows = row, from_row = row_idx),
-        color = wb_color(hidden_font_color)
+        color = wb_color(hidden_font_color),
+        name = wb$get_base_font()$name$val,
+        size = wb$get_base_font()$size$val
       )
     }
 

@@ -101,7 +101,10 @@ add_form_sheets <- function(wb, datadict_tables, var_select = FALSE) {
         wb$merge_cells(dims = str_glue("A4:{int2col(col2int(doc_width)-1)}4"))
         wb$add_font(dims = "A4",
                     color = wb_color(select_font_color),
-                    size = 14, italic = TRUE)
+                    size = 14,
+                    italic = TRUE,
+                    name = wb$get_base_font()$name$val
+        )
         wb$add_cell_style(dims = "A4",
                           horizontal = "right",
                           vertical = "center",
@@ -118,7 +121,9 @@ add_form_sheets <- function(wb, datadict_tables, var_select = FALSE) {
         )
         wb$add_font(dims = str_glue("{doc_width}4"),
                     color = wb_color(select_font_color),
-                    bold = TRUE
+                    bold = TRUE,
+                    name = wb$get_base_font()$name$val,
+                    size = wb$get_base_font()$size$val
                     )
         wb$add_cell_style(dims = str_glue("{doc_width}4"),
                           horizontal = "center",
@@ -241,7 +246,9 @@ add_form_sheets <- function(wb, datadict_tables, var_select = FALSE) {
       for (row in hidden) {
         wb$add_font(
           dims = wb_dims(x = data, rows = row, from_row = row_idx),
-          color = wb_color(hidden_font_color)
+          color = wb_color(hidden_font_color),
+          name = wb$get_base_font()$name$val,
+          size = wb$get_base_font()$size$val
         )
       }
 
@@ -258,7 +265,12 @@ add_form_sheets <- function(wb, datadict_tables, var_select = FALSE) {
         pull(row)
 
       for (row in unhide_questions) {
-        wb$add_font(dims = str_glue("B{row+row_idx}"), color = wb_color("auto"))
+        wb$add_font(
+          dims = str_glue("B{row+row_idx}"),
+          color = wb_color("auto"),
+          name = wb$get_base_font()$name$val,
+          size = wb$get_base_font()$size$val
+        )
       }
 
       # wrap text in table

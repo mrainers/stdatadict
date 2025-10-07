@@ -151,6 +151,7 @@ create_datadict <- function(datadict_tables,
                             form_type_description = TRUE,
                             doc_width = "G") {
   wb <- openxlsx2::wb_workbook()
+  wb$set_base_font(font_name = "Calibri")
 
   add_form_overview(wb,
                     datadict_tables = datadict_tables,
