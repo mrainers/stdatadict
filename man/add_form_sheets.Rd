@@ -19,10 +19,6 @@ workbook with form item tables added (invisibly)
 \description{
 Create a workbook sheet for every table in the datadict_tables$form_items
 list.
-
-The parameter "var_select" is ignored so far but in future release a 'select'
-column with selection rules will be added to the form sheet tables, if
-'var_select' = TRUE
 }
 \examples{
 \dontrun{

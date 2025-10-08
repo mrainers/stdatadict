@@ -4,10 +4,6 @@
 #' Create a workbook sheet for every table in the datadict_tables$form_items
 #' list.
 #'
-#' The parameter "var_select" is ignored so far but in future release a 'select'
-#' column with selection rules will be added to the form sheet tables, if
-#' 'var_select' = TRUE
-#'
 #' @param wb a workbook
 #' @param datadict_tables generated with [create_datadict_tables()]
 #' @param var_select (logical) Is this a variable selection document?

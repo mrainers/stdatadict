@@ -36,7 +36,8 @@ An excel workbook
 }
 \description{
 Wrapper function for creating a data dictionary. This function calls:
-\code{\link[openxlsx2:wb_workbook]{openxlsx2::wb_workbook()}}, \code{\link[=add_form_overview]{add_form_overview()}} and \code{\link[=add_form_sheets]{add_form_sheets()}}
+\code{\link[openxlsx2:wb_workbook]{openxlsx2::wb_workbook()}}, \code{\link[=add_form_overview]{add_form_overview()}}, \code{\link[=add_form_sheets]{add_form_sheets()}}
+and \code{\link[=link_form_sheets]{link_form_sheets()}}
 }
 \examples{
 \dontrun{create_datadict(datadict_tables)}

@@ -1,3 +1,9 @@
+# stdatadict 0.4.0
+
+- **New Function** `link_form_sheet()` adds links in the Form Overview table
+  columns to the Form sheet in the excel file. Also adds a link to the Form 
+  overview to each A1 cell in the form item sheets. 
+
 # stdatadict 0.3.0
 
 - **Breaking Changes** 

@@ -136,7 +136,8 @@ insert_worksheet <- function(wb, .after = 0, ...) {
 #' Create A data dictionary
 #'
 #' Wrapper function for creating a data dictionary. This function calls:
-#' [openxlsx2::wb_workbook()], [add_form_overview()] and [add_form_sheets()]
+#' [openxlsx2::wb_workbook()], [add_form_overview()], [add_form_sheets()]
+#' and [link_form_sheets()]
 #'
 #' @inheritParams add_form_overview
 #'
@@ -163,6 +164,8 @@ create_datadict <- function(datadict_tables,
 
   # this may take some seconds
   add_form_sheets(wb, datadict_tables = datadict_tables)
+
+  link_form_sheets(wb)
 
   wb
 }
