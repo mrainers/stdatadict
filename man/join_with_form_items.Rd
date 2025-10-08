@@ -40,20 +40,20 @@ performing the join:
 \examples{
 \dontrun{
 ## create example data for matching
-extra_data <- form_items \%>\%
-  tibble::enframe(name = "mainform") \%>\%
-  tidyr::unnest(cols = c(value)) \%>\%
+extra_data <- form_items |>
+  tibble::enframe(name = "mainform") |>
+  tidyr::unnest(cols = c(value)) |>
   select(
     mainform,
     table_col = Table,
-    varname_col = "Variable Name") \%>\%
+    varname_col = "Variable Name") |>
   # add random vargroups
   mutate(var_group = sample(
     x = c("one", "two", NA),
     size = nrow(.),
     replace = TRUE,
     prob = c(0.2, 0.2, 0.6)
-  )) \%>\%
+  )) |>
   filter(!is.na(var_group))
 
 ## add "var_group" to form_items, match by mainform, table and varname

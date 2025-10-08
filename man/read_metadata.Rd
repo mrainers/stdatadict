@@ -2,43 +2,51 @@
 % Please edit documentation in R/read_metadata.R
 \name{read_metadata}
 \alias{read_metadata}
-\title{Read Meta Data Files From A SecuTrial or stExport Directory}
+\title{Read Setup Data Files From A SecuTrial or stExport Directory}
 \usage{
-read_metadata(data_dir, delim = ";", decimal_mark = ",", encoding = "UTF-8")
+read_metadata(data_dir, ..., safe_read = FALSE)
 }
 \arguments{
 \item{data_dir}{Name of the Directory or Zip File in which the SecuTrial or
 tsExport data is stored.}
 
-\item{delim}{Single character used to separate fields within a record.}
+\item{...}{<\code{\link[rlang:dyn-dots]{dynamic-dots}} arguments passed to \code{\link[readr:read_delim]{readr::read_delim()}}.
+If not specified this function passes the following parameters to \code{read_delim()}:
+\itemize{
+\item escape_backslash = TRUE,
+\item escape_double = FALSE,
+\item locale = readr::locale(decimal_mark = ",", grouping_mark = "", encoding = "UTF-8")
+\item guess_max = Inf
+\item show_col_types = FALSE
+}}
 
-\item{decimal_mark}{Symbol used to indicate the decimal place.
-Decimal mark can only be ⁠,⁠ or ..}
-
-\item{encoding}{Default encoding. This only affects how the file is
-read - readr always converts the output to UTF-8.}
+\item{safe_read}{(logical) Should the data read linewise and repaired if
+necessary? Some exported table have an inconsistent number of fields in the
+lines. When safe_read is activated, the data is read linewise and
+inconsistencies are repaired before reading the data into tables. However,
+this option slows down the reading process, for big files. Default = FALSE.}
 }
 \value{
 List of tibbles with meta data read from the SecuTrial or tsExport
 directory or zip file.
 }
 \description{
-Read the following csv files from the export directory or zip file:
+Read setup data files from the export directory or zip file:
 \itemize{
-\item vp.csv or visitplan*.csv
-\item vpfs.csv or visitplanforms*.csv
-\item fs.csv or forms*.csv
-\item qs.csv or questions*.csv
-\item cl.csv or cl*.csv
-\item is.csv or items*.csv
+\item vp.csv/xls or visitplan*.csv/xls
+\item vpfs.csv or visitplanforms*.csv/xls
+\item fs.csv/xls or forms*.csv/xls
+\item qs.csv/xls or questions*.csv/xls
+\item is.csv/xls or items*.csv/xls
+\item cl.csv/xls or cl*.csv/xls
 }
 
 If one of this files isn't present in the data directory, the function exits
 with an error message and no files where read.
 
-The column "hidden" will be added to the files: "fs.csv", "qs.csv", and
-"is.csv" if it doesn't already exists, because further functions need this
-column to be present.
+You must choose "Store reference values - separate table" and include
+"Project setup" export options when creating the export in order to have
+these files included.
 }
 \examples{
 \dontshow{if (interactive()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}

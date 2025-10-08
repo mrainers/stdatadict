@@ -24,6 +24,7 @@ Imports:
     stringr,
     tibble,
     tidyr,
+    vctrs,
     withr
 Suggests:
     kableExtra

@@ -6,8 +6,6 @@
 #' This function loads an individual csv file from an Secutrial export
 #' zip archive or directory.
 #'
-#' This is an internal function which is wrapped by read_secutrial_raw
-#'
 #' Secutrial attaches an empty column at the end of each scv table.Therefore this
 #' function also removes the empty last column if present.
 #'
@@ -29,9 +27,7 @@
 #'
 #' @return The function returns a tibble for the data in file_name.
 #'
-#' @seealso [read_secutrial_raw()]
-#'
-#' @export
+#' @noRd
 #'
 #' @examples
 #' \dontrun{
@@ -189,10 +185,20 @@ read_secutrial_table <- function(data_dir, file_name, ..., safe_read = FALSE) {
 #' "Project setup" export options when creating the export in order to have
 #' these files included.
 #'
-#' @inheritParams read_secutrial_table
-#' @inheritParams readr::locale
 #' @param data_dir Name of the Directory or Zip File in which the SecuTrial or
 #'     tsExport data is stored.
+#' @param ... <[`dynamic-dots`][rlang::dyn-dots] arguments passed to [readr::read_delim()].
+#'    If not specified this function passes the following parameters to `read_delim()`:
+#'    - escape_backslash = TRUE,
+#'    - escape_double = FALSE,
+#'    - locale = readr::locale(decimal_mark = ",", grouping_mark = "", encoding = "UTF-8")
+#'    - guess_max = Inf
+#'    - show_col_types = FALSE
+#' @param safe_read (logical) Should the data read linewise and repaired if
+#'   necessary? Some exported table have an inconsistent number of fields in the
+#'   lines. When safe_read is activated, the data is read linewise and
+#'   inconsistencies are repaired before reading the data into tables. However,
+#'   this option slows down the reading process, for big files. Default = FALSE.
 #'
 #' @return List of tibbles with meta data read from the SecuTrial or tsExport
 #'     directory or zip file.
