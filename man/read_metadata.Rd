@@ -49,7 +49,7 @@ You must choose "Store reference values - separate table" and include
 these files included.
 }
 \examples{
-\dontshow{if (interactive()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+\dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
 data_dir <- file.choose()
 st_metadata <- read_metadata(data_dir)
 \dontshow{\}) # examplesIf}

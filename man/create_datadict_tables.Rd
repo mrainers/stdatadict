@@ -50,7 +50,7 @@ Access object from this environment:
 \verb{stdatadict::intermediates$<ObjName>}.
 }
 \examples{
-\dontshow{if (interactive()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+\dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
 datadict_raw <- create_datadict_tables(st_metadata)
 \dontshow{\}) # examplesIf}
 }

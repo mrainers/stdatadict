@@ -32,6 +32,7 @@ stdatadictEnv <- new_environment(list(
     aquamarin = aquamarin,
     dzhk = dzhk,
     napkon = napkon,
+    num3 = num3,
     no_colors = no_colors,
     no_colours = no_colors,
     purpur = purpur

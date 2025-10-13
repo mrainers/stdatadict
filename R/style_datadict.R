@@ -189,7 +189,7 @@ style_datadict <- function(wb, theme_name = stdatadictEnv$use_color_theme) {
         fgColor = wb_color(tint_color(color_theme$border_select_column, 0.47))
       ),
       font_style = create_font(
-        color = wb_color(color_theme$font_select),
+        color = wb_color(color_theme$font_select_column),
         b = TRUE
       ),
       border_style = create_border(
@@ -206,7 +206,7 @@ style_datadict <- function(wb, theme_name = stdatadictEnv$use_color_theme) {
         fgColor = wb_color(color_theme$bg_select_column)
       ),
       font_style = create_font(
-        color = wb_color(color_theme$font_select)
+        color = wb_color(color_theme$font_select_column)
       ),
       border_style = create_border(
         top    = "thin", top_color    = wb_color(color_theme$border_select_column),
@@ -219,10 +219,10 @@ style_datadict <- function(wb, theme_name = stdatadictEnv$use_color_theme) {
     select_all_q = list(
       fill_style = create_fill(
         patternType = "solid",
-        fgColor = wb_color("white")
+        fgColor = wb_color(color_theme$bg_select_all)
       ),
       font_style = create_font(
-        color = wb_color(color_theme$font_select_column),
+        color = wb_color(color_theme$font_select_all),
         sz = 14,
         i = TRUE
       ),
@@ -232,7 +232,7 @@ style_datadict <- function(wb, theme_name = stdatadictEnv$use_color_theme) {
     select_all_a = list(
       fill_style = create_fill(patternType = "none"),
       font_style = create_font(
-        color = wb_color(color_theme$font_select_column),
+        color = wb_color(color_theme$font_select_all),
         b = TRUE
       ),
       border_style = create_border()

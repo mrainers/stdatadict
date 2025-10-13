@@ -20,7 +20,9 @@ purpur <- list(
   font_hidden            = "#9696aa",
   bg_select_column       = "#E1F7EF",
   font_select_column     = "#006141",
-  border_select_column   = "#90E0C5"  # tint_color("#90e0c5", 0.49) for Table head background
+  border_select_column   = "#90E0C5",  # tint_color("#90e0c5", 0.49) for Table head background
+  font_select_all        = "#006141",
+  bg_select_all          = "#FFFFFF"
 )
 
 aquamarin <- list(
@@ -42,7 +44,9 @@ aquamarin <- list(
   font_hidden            = "#9696aa",
   bg_select_column       = "#E1F7EF",
   font_select_column     = "#006141",
-  border_select_column   = "#90e0c5"
+  border_select_column   = "#90e0c5",
+  font_select_all        = "#006141",
+  bg_select_all          = "#FFFFFF"
 )
 
 #af0233
@@ -65,7 +69,9 @@ dzhk <- list(
   font_hidden            = "#9696aa",
   bg_select_column       = "#E1F7EF",
   font_select_column     = "#006141",
-  border_select_column   = "#90e0c5"
+  border_select_column   = "#90e0c5",
+  font_select_all        = "#006141",
+  bg_select_all          = "#FFFFFF"
 )
 
 
@@ -89,7 +95,34 @@ napkon <- list(
   font_hidden            = "#9696aa",
   bg_select_column       = "#E1F7EF",
   font_select_column     = "#006141",
-  border_select_column   = "#90e0c5"
+  border_select_column   = "#90e0c5",
+  font_select_all        = "#006141",
+  bg_select_all          = "#FFFFFF"
+)
+
+
+num3 <- list(
+  bg_primary             = "#43C4B0",
+  font_primary           = "#FFFFFF",
+  bg_subtitle            = "#FFFFFF",
+  font_subtitle          = "#33A390",
+  bg_h1                  = "#DDF8F3",
+  font_h1                = "#43C4B0",
+  bg_tablehead           = "#485156",
+  font_tablehead         = "#FFFFFF",
+  bg_visit               = "#EA5167",
+  font_visit             = "#FFFFFF",
+  bg_tablecol_overview   = "#FFCC00",
+  font_tablecol_overview = "#000000",
+  bg_tablecol_items      = "#ECEDEE",
+  font_tablecol_items    = "#000000",
+  border_tablecol_items  = "#A2A7AC",
+  font_hidden            = "#788790",
+  bg_select_column       = "#DDF8F3",
+  font_select_column     = "#277D6F",
+  border_select_column   = "#42d1b8",
+  font_select_all        = "#EA5167",
+  bg_select_all          = "#FFFFFF"
 )
 
 
@@ -113,6 +146,8 @@ no_colors <- list(
   font_hidden            = "auto",
   bg_select_column       = "auto",
   font_select_column     = "auto",
-  border_select_colums   = "auto"
+  border_select_colums   = "auto",
+  font_select_all        = "auto",
+  bg_select_all          = "auto"
 )
 

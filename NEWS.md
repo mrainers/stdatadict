@@ -1,3 +1,12 @@
+# stdatadict 0.4.1
+
+- **New Colortheme** "num3" resembles the colors of of the num website 
+  "https://www.netzwerk-universitaetsmedizin.de". (#9)
+  
+- **Enhancement** It is now possible to defins the color of the "select all" 
+  question independently from the colors of the "select" column. 
+  
+
 # stdatadict 0.4.0
 
 - **New Function** `link_form_sheet()` adds links in the Form Overview table

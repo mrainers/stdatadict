@@ -21,7 +21,8 @@ add_form_sheets <- function(wb, datadict_tables, var_select = FALSE) {
   # check if styles are already registered, if not do so
   required_styles <- c(
     "form_sheet_head", "form_sheet_tables",
-    "text_area", "table_head", "form_sheet_table_col"
+    "text_area", "table_head", "form_sheet_table_col",
+    "select_all_q", "select_all_a"
   )
   if (!all(required_styles %in% wb$styles_mgr$xf$name)) {
     style_datadict(wb)
@@ -89,7 +90,8 @@ add_form_sheets <- function(wb, datadict_tables, var_select = FALSE) {
       ### add var_select stuff -------------------------------------------------
 
       if (var_select) {
-        select_font_color <- get_color_theme()$font_select_column
+        #select_font_color <- get_color_theme()$font_select_column
+        select_font_color <- get_color_theme()$font_select_all
 
         # add "select entire form?" question
         wb$add_data(x = stdatadictEnv$i18n_dd$t("select_entire_form"),

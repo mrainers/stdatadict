@@ -136,15 +136,17 @@ show_color_theme <- function(name) {
     font_tablecol_items    = "fontcolor table names in form items",
     border_tablecol_items  = "border table names in form items",
     font_hidden            = "fontcolor hidden forms and items",
+    font_select_column     = "font color 'select' column",
     bg_select_column       = "background 'select' column",
-    font_select_column     = "font color 'select' column and questions",
-    border_select_column   = "border color 'select' column"
+    border_select_column   = "border color 'select' column",
+    font_select_all        = "font color 'select all' question",
+    bg_select_all          = "background color 'select all' question"
   )
 
   theme <- stdatadictEnv$color_themes[[name]]
 
   colortable <- tibble::tibble(name = names(theme),
-                               description = unlist(theme_description),
+                               description = unlist(theme_description[names(theme)]),
                                color = unlist(theme))
 
   if (rlang::is_installed("kableExtra")) {
