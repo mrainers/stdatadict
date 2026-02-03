@@ -36,6 +36,7 @@ Create the following tables for use in the data dictionary file:
 \itemize{
 \item visit form overview
 \item casenode forms overview
+\item centreform overview
 \item subform (repetition table) overview
 \item itemtables for each form
 }

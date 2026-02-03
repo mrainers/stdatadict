@@ -136,3 +136,33 @@ totools_name_repair <- function (names) {
   names[repair_me] <- vctrs::vec_as_names(names, repair = "unique_quiet")[repair_me]
   names
 }
+
+
+#' Find common start string
+#'
+#' From a character vector find a substring that all strings begin with.
+#' If no common string was found, return an empty character.
+#'
+#' @param character vector with at least two elements.
+#' @return character string that all strings in x start with.
+#' @noRd
+common_start_string <- function(x) {
+  # this function is based on https://stackoverflow.com/a/28273810/3772141
+  if (length(x) < 2) stop("x must contain at least 2 elements.")
+
+  last_common_char <- x %>%
+    # get first and last element of the vector when sorted alphabetically
+    range() %>%
+    # split the first and last element by character
+    stringr::str_split("") %>%
+    # search for the first not common element and so, get the last matching one
+    { suppressWarnings(do.call("==", .)) } %>%
+    match(FALSE, .) -1
+
+  # if there is no matching element, return an empty vector, else return the common part
+  ifelse(
+    last_common_char == 0,
+    return(character()),
+    return(substr(x[1], 1, last_common_char))
+  )
+}

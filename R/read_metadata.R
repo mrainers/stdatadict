@@ -199,6 +199,12 @@ read_secutrial_table <- function(data_dir, file_name, ..., safe_read = FALSE) {
 #'   lines. When safe_read is activated, the data is read linewise and
 #'   inconsistencies are repaired before reading the data into tables. However,
 #'   this option slows down the reading process, for big files. Default = FALSE.
+#' @param detect_ctr_forms `r lifecycle::badge("experimental")` (logical) should
+#'   the function identify center forms? If TRUE, a formtype column will be added
+#'   to the fs/forms table, which then identifies the center forms. Center forms
+#'   are identified by reading all the headings from the data files. Therefore,
+#'   setting this parameter to TRUE the reading process might be be somewhat
+#'   slower. Default is FALSE.
 #'
 #' @return List of tibbles with meta data read from the SecuTrial or tsExport
 #'     directory or zip file.
@@ -207,7 +213,7 @@ read_secutrial_table <- function(data_dir, file_name, ..., safe_read = FALSE) {
 #' @examplesIf interactive()
 #' data_dir <- file.choose()
 #' st_metadata <- read_metadata(data_dir)
-read_metadata <- function(data_dir, ..., safe_read = FALSE) {
+read_metadata <- function(data_dir, ..., safe_read = FALSE, detect_ctr_forms = FALSE) {
   # Check if data_dir is an existing zip file or directory.
   is_zip <- grepl(".zip$", data_dir) & file.exists(data_dir)
   is_dir <- dir.exists(data_dir)
@@ -304,10 +310,29 @@ read_metadata <- function(data_dir, ..., safe_read = FALSE) {
       read_secutrial_table(data_dir, file, ..., safe_read = safe_read)
     })
 
+  # identify center forms
+  if (detect_ctr_forms) {
+    ctr_forms <- detect_centre_forms(data_dir)
+    search_pattern <- paste0("^(?!emnp).*(", paste0(ctr_forms, collapse = "|"),")$")
+
+    st_metadata$fs <- st_metadata$fs |>
+      mutate(formtype = if_else(
+        str_detect(.data$formtablename, search_pattern),
+        "centre",
+        NA_character_
+      ), .after = "formtablename")
+
+    search_pattern
+
+  }
+
+  # add export date
   st_metadata <- append(st_metadata,
                         list(export_date = get_export_date(data_dir, is_zip)),
                         after = 0
   )
+
+
 
   st_metadata
 }
@@ -364,6 +389,130 @@ get_export_date <- function(data_dir, is_zip = FALSE) {
 }
 
 
+#' Identify Center Forms
+#'
+#' @description
+#' It is not possible to distinguish between casenode and center forms when
+#' looking into the projekt setup tables. This function therefore reads the
+#' headers of all data files and identifies the cansenode forms based on the
+#' variable names. It assumes that centre forms have at least one centre id
+#' variable ("mnpctrid", "mnpctrname", "export_ctrid") but no patient ids
+#' ("mnppid", "mnppsd", "export_psn").
+#'
+#' @param data_dir Name of the Directory or Zip File in which the SecuTrial or
+#'     tsExport data is stored.
+#'
+#' @return character vector with all form names (based on the file names),
+#' that are center forms.
+#' @noRd
+detect_centre_forms <- function(data_dir) {
+  ### Read and check data ----
+
+  # Check if data_dir is an existing zip file or directory.
+  is_zip <- grepl(".zip$", data_dir) & file.exists(data_dir)
+  is_dir <- dir.exists(data_dir)
+
+  # filenames in secutrial folder
+  if (is_dir) {
+    files <- list.files(data_dir)
+  } else if (is_zip) {
+    files <- utils::unzip(data_dir, list = TRUE)$Name
+  } else {
+    abort(paste("no zip file or directory found:", data_dir))
+  }
+
+  # parse file names
+
+  # data files
+  data_files <- files |> str_subset("html$", negate = TRUE)
+
+  # data file extension
+  file_extension <- data_files |>
+    tools::file_ext() |>
+    unique()
+
+  # abort when files are not CSV or Excel format
+  if (
+    length(file_extension) != 1 ||
+    tolower(file_extension) %notin% c("csv", "xls", "xlsx")
+  ) {
+    abort("Your export must be exported as MS Excel or CSV format.")
+  }
+
+  data_files_sans_ext <- data_files |> tools::file_path_sans_ext()
+
+  ### extract form name from long file names ----
+  # Copied and adapted from toTools::read_export_options()
+
+  # long file names
+  # assume that with long names all files end with %Y%m%d-%H%M%s date time format.
+  long_names <- data_files_sans_ext |>
+    str_detect("\\d{8}-\\d{6}$") |>
+    all()
+
+  # common file appendix for exports with long names or rectangular exports
+  if (long_names) {
+    file_tag <- data_files_sans_ext |>
+      stringi::stri_reverse() |>
+      common_start_string() |>
+      stringi::stri_reverse()
+  } else {
+    file_tag <- ""
+  }
+
+  # extract project_id from long named files
+  if (long_names) {
+    tmp_files <- data_files_sans_ext |>
+      str_subset("^e?mnp") |>
+      str_remove("^e?mnp")
+
+    # works only if the data contains multiple studydata tables.
+    if (length(tmp_files) > 1) {
+      project_id <- tmp_files |>
+        common_start_string() |>
+        str_extract("[:alnum:]*") # make this work for hap, where each form starts with "_"
+    } else {
+      project_id <- NULL
+    }
+  }
+
+  # extract form names from file names
+  if (long_names) {
+    form_names <- data_files_sans_ext |>
+      str_remove(file_tag) |>
+      str_remove(paste0("mnp", project_id))
+  } else {
+    form_names <- data_files_sans_ext
+  }
+
+  # read data file headers
+  data_headers <- data_files |>
+    map(\(file) {
+      if (is_zip) {
+        data_file <- unz(data_dir, file)
+      } else {
+        data_file <- file.path(data_dir, file)
+      }
+      # rlang::inform(paste("Read:", file))
+      readr::read_delim(data_file, n_max = 0, col_types = "c") |>
+        suppressMessages()
+    }) |>
+    purrr::set_names(form_names)
+
+
+  # this should also work if id variables where deleted/changed in the
+  # transferoffice handover data.
+  # TODO: Add option to define own id variable names
+  ctr_id_vars <- c("mnpctrid", "mnpctrname", "export_ctrid")
+  pat_id_vars <- c("mnppid", "mnppsd", "export_psn")
+
+  data_headers |>
+    purrr::keep(\(df) !any(pat_id_vars %in% names(df))) |>
+    purrr::keep(\(df) any(ctr_id_vars %in% names(df))) |>
+    purrr::discard_at(c("ctr", "centre")) |>
+    names()
+}
+
 
 # TODO an andere Funktion auslagern
 #' The column "hidden" will be added to the files:
@@ -379,3 +528,4 @@ get_export_date <- function(data_dir, is_zip = FALSE) {
 #' if (any(str_detect(file_name, files_with_hidden))) {
 #'   if (!"hidden" %in% names(data)) data$hidden <- as.numeric(NA)
 #' }
+

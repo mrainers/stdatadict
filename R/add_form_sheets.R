@@ -37,7 +37,8 @@ add_form_sheets <- function(wb, datadict_tables, var_select = FALSE) {
     `+`(var_select) %>%
     int2col()
 
-  form_names <- datadict_tables$form_overview[1:2] %>%
+  form_names <- datadict_tables$form_overview %>%
+    purrr::keep_at(c("visit_forms", "casenode_forms", "centre_forms")) %>%
     map(~ .x %>% select(1:2)) %>%
     dplyr::bind_rows() %>%
     tibble::deframe()

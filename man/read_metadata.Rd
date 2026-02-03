@@ -4,7 +4,7 @@
 \alias{read_metadata}
 \title{Read Setup Data Files From A SecuTrial or stExport Directory}
 \usage{
-read_metadata(data_dir, ..., safe_read = FALSE)
+read_metadata(data_dir, ..., safe_read = FALSE, detect_ctr_forms = FALSE)
 }
 \arguments{
 \item{data_dir}{Name of the Directory or Zip File in which the SecuTrial or
@@ -25,6 +25,13 @@ necessary? Some exported table have an inconsistent number of fields in the
 lines. When safe_read is activated, the data is read linewise and
 inconsistencies are repaired before reading the data into tables. However,
 this option slows down the reading process, for big files. Default = FALSE.}
+
+\item{detect_ctr_forms}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}} (logical) should
+the function identify center forms? If TRUE, a formtype column will be added
+to the fs/forms table, which then identifies the center forms. Center forms
+are identified by reading all the headings from the data files. Therefore,
+setting this parameter to TRUE the reading process might be be somewhat
+slower. Default is FALSE.}
 }
 \value{
 List of tibbles with meta data read from the SecuTrial or tsExport

@@ -24,6 +24,12 @@ add_form_overview <- function(wb,
                               as_of_date = NULL,
                               form_type_description = TRUE,
                               doc_width = "G") {
+  # which form types are actually in the data?
+  available_formtypes <- datadict_tables$form_overview |>
+    purrr::keep(\(df) nrow(df) > 0) |>
+    names() |>
+    str_replace("sub_", "sub")
+
   # init form overview sheet
   wb$add_worksheet("Form Overview")
 
@@ -88,88 +94,63 @@ add_form_overview <- function(wb,
   form_descr_intro <- stdatadictEnv$i18n_dd$t("form_descr_intro")
   add_paragraph(wb, form_descr_intro, row = row_idx)
 
-  visit_form_descr <-
-    fmt_txt(stdatadictEnv$i18n_dd$t("visit_forms_descr_item"), bold = TRUE) +
-    fmt_txt(" ") +
-    fmt_txt(stdatadictEnv$i18n_dd$t("visit_forms_descr"))
-  add_paragraph(wb, visit_form_descr, row = row_idx + 1)
+  for (type in available_formtypes) {
+    form_descr <- fmt_txt(stdatadictEnv$i18n_dd$t(paste0(type, "_descr_item")), bold = TRUE) +
+      fmt_txt(" ") +
+      fmt_txt(stdatadictEnv$i18n_dd$t(paste0(type, "_descr")))
+    add_paragraph(wb, form_descr, row = row_idx + 1)
+    row_idx <- row_idx + 1
+  }
 
-  casenode_form_descr <-
-    fmt_txt(stdatadictEnv$i18n_dd$t("casenode_forms_descr_item"), bold = TRUE) +
-    fmt_txt(" ") +
-    fmt_txt(stdatadictEnv$i18n_dd$t("casenode_forms_descr"))
-  add_paragraph(wb, casenode_form_descr, row = row_idx + 2)
-
-  subform_descr <-
-    fmt_txt(stdatadictEnv$i18n_dd$t("subforms_descr_item"), bold = TRUE) +
-    fmt_txt(" ") +
-    fmt_txt(stdatadictEnv$i18n_dd$t("subforms_descr"))
-  add_paragraph(wb, subform_descr, row = row_idx+ 3)
-
-  add_empty_row(wb, row = row_idx + 4, doc_width = doc_width)
+  add_empty_row(wb, row = row_idx + 1, doc_width = doc_width)
 
   form_sheet_descr <- fmt_txt(stdatadictEnv$i18n_dd$t("form_items_sheet_descr"),
                               italic = TRUE)
-  add_paragraph(wb, form_sheet_descr, row = row_idx + 5)
+  add_paragraph(wb, form_sheet_descr, row = row_idx + 2)
 
   hidden_descr <- fmt_txt(stdatadictEnv$i18n_dd$t("hidden_descr"), italic = TRUE)
-  add_paragraph(wb, hidden_descr, row = row_idx + 6)
+  add_paragraph(wb, hidden_descr, row = row_idx + 3)
 
-  add_empty_row(wb, row = row_idx + 7, doc_width = doc_width)
+  add_empty_row(wb, row = row_idx + 4, doc_width = doc_width)
 
-  row_idx <- row_idx + 8
+  row_idx <- row_idx + 5
   }
 
-  # "Forms at Visits" ----------------------------------------------------------
-  # section title
-  add_section(wb, stdatadictEnv$i18n_dd$t("visit_forms_subsection"), row = row_idx)
+  # Form Overview Tables -------------------------------------------------------
 
-  row_idx <- row_idx + 2
+  for (type in available_formtypes) {
+    # section title
+    add_section(wb, stdatadictEnv$i18n_dd$t(paste0(type, "_subsection")), row = row_idx)
 
-  # visit forms table
-  data <- datadict_tables$form_overview$visit_forms %>%
-    select(-"hidden")
+    row_idx <- row_idx + 2
 
-  if (nrow(data) == 0) {
-    wb$merge_cells(dims = str_glue("A{row_idx}:{doc_width}{row_idx}"))
-    formtype <- stdatadictEnv$i18n_dd$t("visit_forms_descr_item")
-    text <- as.character(str_glue(stdatadictEnv$i18n_dd$t("form_not_available")))
-    wb$add_data(x = text, dims = str_glue("A{row_idx}"))
-    wb$add_font(dims = str_glue("A{row_idx}"), italic = TRUE)
-    wb$add_cell_style(dims = str_glue("A{row_idx}"), horizontal = "center")
+    type_table <- str_replace(type, "subform", "sub_form")
 
-  } else {
+    # forms table
+    data <- datadict_tables$form_overview[[type_table]] |>
+      select(-"hidden")
+
     wb$add_data(x = data, dims = str_glue("A{row_idx}"))
 
+    # generic cell styles --------------------------
+
+    # Table header style
     wb$set_cell_style(
-      dims = str_glue("A{row_idx}:B{row_idx}"),
+      dims = wb_dims(x = data, select = "col_names", from_row = row_idx),
       style = wb$styles_mgr$get_xf_id("table_head")
     )
 
-    wb$set_cell_style(
-      dims = str_glue("C{row_idx}:{int2col(length(data))}{row_idx}"),
-      style = wb$styles_mgr$get_xf_id("visit_names")
-    )
-
+    # table name style (first column)
     wb$set_cell_style(
       dims = str_glue("A{row_idx+1}:A{row_idx + nrow(data)}"),
       style = wb$styles_mgr$get_xf_id("table_names")
     )
 
-    wb$add_font(
-      dims = wb_dims(x = data, cols = 3:(length(data)), from_row = row_idx),
-      b = TRUE
-    )
-    wb$add_cell_style(
-      dims = wb_dims(x = data, cols = 3:(length(data)), from_row = row_idx),
-      horizontal = "center"
-    )
-
     # grey out hidden forms
-    hidden <- datadict_tables$form_overview$visit_forms %>%
-      select("hidden") %>%
-      mutate(row_nr = dplyr::row_number()) %>%
-      filter(as.logical(.data$hidden)) %>%
+    hidden <- datadict_tables$form_overview$visit_forms |>
+      select("hidden") |>
+      mutate(row_nr = dplyr::row_number()) |>
+      filter(as.logical(.data$hidden)) |>
       dplyr::pull(.data$row_nr)
 
     hidden_font_color <- get_color_theme()$font_hidden
@@ -183,6 +164,7 @@ add_form_overview <- function(wb,
       )
     }
 
+    # border style
     wb$add_border(
       dims = wb_dims(x = data, from_row = row_idx),
       inner_hgrid = "thin",
@@ -190,180 +172,89 @@ add_form_overview <- function(wb,
       inner_vgrid = "thin",
       inner_vcolor = wb_color("black")
     )
-  }
 
-  row_idx <- row_idx + nrow(data) + 2
+    # visit table cell styles -----------------
 
-  # add visit arm labels
-  if (!is.null(datadict_tables$form_overview$visitarms)) {
-    visarm_legend <- datadict_tables$form_overview$visitarms %>%
-      paste(., names(.), sep = " = ", collapse = ", ")
-
-    text <- fmt_txt(
-      str_glue('{stdatadictEnv$i18n_dd$t("visitarm_labels")}:'), bold = TRUE) +
-      " " + visarm_legend
-
-    wb$add_data(x = text, dims = str_glue("C{row_idx}"))
-
-    row_idx <- row_idx + 2
-  }
-
-  row_idx <- row_idx + 1
-
-  # casenode forms -------------------------------------------------------------
-  # section title
-  add_section(wb, stdatadictEnv$i18n_dd$t("casenode_forms_subsection"), row = row_idx)
-
-  row_idx <- row_idx + 2
-
-  # casenode forms table
-  data <- datadict_tables$form_overview$casenode_forms %>%
-    select(-"hidden")
-
-  if (nrow(data) == 0) {
-    wb$merge_cells(dims = str_glue("A{row_idx}:{doc_width}{row_idx}"))
-    formtype <- stdatadictEnv$i18n_dd$t("casenode_forms_descr_item")
-    text <- as.character(str_glue(stdatadictEnv$i18n_dd$t("form_not_available")))
-    wb$add_data(x = text, dims = str_glue("A{row_idx}"))
-    wb$add_font(
-      dims = str_glue("A{row_idx}"),
-      italic = TRUE,
-      name = wb$get_base_font()$name$val,
-      size = wb$get_base_font()$size$val
+    if (type == "visit_forms") {
+      # header style of visit names
+      wb$set_cell_style(
+        dims = str_glue("C{row_idx}:{int2col(length(data))}{row_idx}"),
+        style = wb$styles_mgr$get_xf_id("visit_names")
       )
-    wb$add_cell_style(dims = str_glue("A{row_idx}"), horizontal = "center")
 
-  } else {
-    wb$add_data(x = data, dims = str_glue("A{row_idx}"))
-
-    wb$set_cell_style(
-      dims = wb_dims(x = data, select = "col_names", from_row = row_idx),
-      style = wb$styles_mgr$get_xf_id("table_head")
-    )
-
-    wb$set_cell_style(
-      dims = str_glue("A{row_idx+1}:A{row_idx + nrow(data)}"),
-      style = wb$styles_mgr$get_xf_id("table_names")
-    )
-
-    hidden <- datadict_tables$form_overview$casenode_forms %>%
-      select("hidden") %>%
-      mutate(row_nr = dplyr::row_number()) %>%
-      filter(as.logical(.data$hidden)) %>%
-      dplyr::pull(.data$row_nr)
-
-    for (row in hidden) {
+      # Cell Style for visit structure: bold and centered.
       wb$add_font(
-        dims = wb_dims(x = data, rows = row, from_row = row_idx),
-        color = wb_color(hidden_font_color),
-        name = wb$get_base_font()$name$val,
-        size = wb$get_base_font()$size$val
+        dims = wb_dims(x = data, cols = 3:(length(data)), from_row = row_idx),
+        b = TRUE
+      )
+      wb$add_cell_style(
+        dims = wb_dims(x = data, cols = 3:(length(data)), from_row = row_idx),
+        horizontal = "center"
       )
     }
 
-    wb$add_border(
-      dims = wb_dims(x = data, from_row = row_idx),
-      inner_hgrid = "thin",
-      inner_hcolor = wb_color("black"),
-      inner_vgrid = "thin",
-      inner_vcolor = wb_color("black")
-    )
+    # subform cell styles -------------------------
+
+    if (type == "subforms") {
+      # join repetition group cells
+        for (row in 0:nrow(data)) {
+         # print(str_glue("merge cells: D{row_idx+row}:{doc_width}{row_idx+row}"))
+          wb$merge_cells(dims = str_glue("D{row_idx+row}:{doc_width}{row_idx+row}"))
+        }
+
+        # merge same mainform cells together
+        merge_rows <- data %>%
+          select(1) %>%
+          mutate(start_row = dplyr::row_number()) %>%
+          summarise(
+            n = dplyr::n(), .by = stdatadictEnv$i18n_dd$t("mainform_col"),
+            start_row = dplyr::first(.data$start_row),
+            end_row = .data$start_row + .data$n - 1
+          ) %>%
+          filter(.data$n > 1)
+
+        if (nrow(merge_rows) > 0) {
+          for (row in 1:nrow(merge_rows)) {
+            start <- merge_rows[row, ]$start_row
+            end <- merge_rows[row, ]$end_row
+            wb$merge_cells(dims = str_glue("A{row_idx+start}:A{row_idx+end}"))
+            wb$merge_cells(dims = str_glue("B{row_idx+start}:B{row_idx+end}"))
+          }
+        }
+
+        wb$add_cell_style(
+          dims = wb_dims(x = data, cols = 1:2, from_row = row_idx),
+          vertical = "top"
+        )
+
+        # Fix border
+        wb$add_border(
+          dims = str_glue("A{row_idx}:{doc_width}{nrow(data)+row_idx}"),
+          inner_hgrid = "thin",
+          inner_hcolor = wb_color("black"),
+          inner_vgrid = "thin",
+          inner_vcolor = wb_color("black")
+        )
+    }
+
+    row_idx <- row_idx + nrow(data) + 2
+
+    # add visit arm labels for visit table
+    if (type == "visit_forms" & !is.null(datadict_tables$form_overview$visitarms)) {
+      visarm_legend <- datadict_tables$form_overview$visitarms %>%
+        paste(., names(.), sep = " = ", collapse = ", ")
+
+      text <- fmt_txt(
+        str_glue('{stdatadictEnv$i18n_dd$t("visitarm_labels")}:'), bold = TRUE) +
+        " " + visarm_legend
+
+      wb$add_data(x = text, dims = str_glue("C{row_idx}"))
+
+      row_idx <- row_idx + 2
+    }
+
+    row_idx <- row_idx + 1
   }
-
-  row_idx <- row_idx + nrow(data) + 3
-
-
-  # subforms -------------------------------------------------------------------
-
-  # section title
-  add_section(wb, stdatadictEnv$i18n_dd$t("subforms_subsection"), row = row_idx)
-
-  row_idx <- row_idx + 2
-
-  # subforms table
-  data <- datadict_tables$form_overview$sub_forms %>%
-    select(-"hidden")
-
-  if (nrow(data) == 0) {
-    wb$merge_cells(dims = str_glue("A{row_idx}:{doc_width}{row_idx}"))
-    formtype <- stdatadictEnv$i18n_dd$t("subforms_descr_item")
-    text <- as.character(str_glue(stdatadictEnv$i18n_dd$t("form_not_available")))
-    wb$add_data(x = text, dims = str_glue("A{row_idx}"))
-    wb$add_font(
-      dims = str_glue("A{row_idx}"),
-      italic = TRUE,
-      name = wb$get_base_font()$name$val,
-      size = wb$get_base_font()$size$val
-    )
-    wb$add_cell_style(dims = str_glue("A{row_idx}"), horizontal = "center")
-
-  } else {
-    wb$add_data(x = data, dims = str_glue("A{row_idx}"))
-
-    wb$set_cell_style(
-      dims = wb_dims(x = data, select = "col_names", from_row = row_idx),
-      style = wb$styles_mgr$get_xf_id("table_head")
-    )
-
-    wb$set_cell_style(
-      dims = str_glue("A{row_idx+1}:A{row_idx + nrow(data)}"),
-      style = wb$styles_mgr$get_xf_id("table_names")
-    )
-
-    hidden <- datadict_tables$form_overview$sub_forms %>%
-      select("hidden") %>%
-      mutate(row_nr = dplyr::row_number()) %>%
-      filter(as.logical(.data$hidden)) %>%
-      dplyr::pull(.data$row_nr)
-
-    for (row in hidden) {
-      wb$add_font(
-        dims = wb_dims(x = data, rows = row, from_row = row_idx),
-        color = wb_color(hidden_font_color),
-        name = wb$get_base_font()$name$val,
-        size = wb$get_base_font()$size$val
-      )
-    }
-
-    for (row in 0:nrow(data)) {
-      wb$merge_cells(dims = str_glue("D{row_idx+row}:{doc_width}{row_idx+row}"))
-    }
-
-    # merge same mainform cells together
-    merge_rows <- data %>%
-      select(1) %>%
-      mutate(start_row = dplyr::row_number()) %>%
-      summarise(
-        n = dplyr::n(), .by = stdatadictEnv$i18n_dd$t("mainform_col"),
-        start_row = dplyr::first(.data$start_row),
-        end_row = .data$start_row + .data$n - 1
-      ) %>%
-      filter(.data$n > 1)
-
-    if (nrow(merge_rows) > 0) {
-      for (row in 1:nrow(merge_rows)) {
-        start <- merge_rows[row, ]$start_row
-        end <- merge_rows[row, ]$end_row
-        wb$merge_cells(dims = str_glue("A{row_idx+start}:A{row_idx+end}"))
-        wb$merge_cells(dims = str_glue("B{row_idx+start}:B{row_idx+end}"))
-      }
-    }
-
-    wb$add_cell_style(
-      dims = wb_dims(x = data, cols = 1:2, from_row = row_idx),
-      vertical = "top"
-    )
-
-    wb$add_border(
-      dims = str_glue("A{row_idx}:{doc_width}{nrow(data)+row_idx}"),
-      inner_hgrid = "thin",
-      inner_hcolor = wb_color("black"),
-      inner_vgrid = "thin",
-      inner_vcolor = wb_color("black")
-    )
-  }
-
-  row_idx <- row_idx + nrow(data) + 3
 
   invisible(wb)
 }

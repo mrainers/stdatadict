@@ -21,6 +21,7 @@ Imports:
     readr,
     rlang,
     shiny.i18n,
+    stringi,
     stringr,
     tibble,
     tidyr,

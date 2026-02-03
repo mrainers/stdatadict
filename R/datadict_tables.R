@@ -51,7 +51,12 @@ refine_fs <- function(fs, vpfs, project_id) {
     fs <- fs |> mutate(hidden = as.numeric(NA), .after = "formtablename")
   }
 
-  fs %>%
+  # add empty formtype variable if not present in the table.
+  if (!("formtype" %in% names(fs))) {
+    fs |> mutate(formtype = NA_character_)
+  }
+
+  fs |>
     mutate(mnpvsno = replace_na(as.numeric(.data$mnpvsno), -1)) |>
     filter(.data$mnpvsno == max(.data$mnpvsno)) |>
     mutate(is_subform = str_detect(.data$formtablename, "^emnp")) |>
@@ -59,6 +64,7 @@ refine_fs <- function(fs, vpfs, project_id) {
     mutate(formtype = dplyr::case_when(
       formid %in% vpfs$formid ~ "visit",
       .data$is_subform ~ "subform",
+      .data$formtype == "centre" ~ "centre",
       TRUE ~ "casenode"
     )) |>
     # hidden visit forms are not in the visitplanforms (vpfs), so they are falsely
@@ -234,11 +240,25 @@ create_visitforms <- function(forms, visits, vpfs) {
 #' @param forms the refined "fs" data table from the secutrial export
 #'
 #' @return tibble that lists all casenode forms
-#' An 'X' in the cells marks, which forms are available at which visits.
 #' @noRd
 create_casenodeforms <- function(forms) {
   forms |>
     filter(.data$formtype == "casenode") |>
+    select("formtablename", "formname", "hidden") |>
+    rename(!!stdatadictEnv$i18n_dd$t("table_col")    := "formtablename",
+           !!stdatadictEnv$i18n_dd$t("formname_col") := "formname"
+    )
+}
+
+#' Create Table of Center Forms
+#'
+#' @param forms the refined "fs" data table from the secutrial export
+#'
+#' @return tibble that lists all center forms
+#' @noRd
+create_centerforms <- function(forms) {
+  forms |>
+    filter(.data$formtype == "centre") |>
     select("formtablename", "formname", "hidden") |>
     rename(!!stdatadictEnv$i18n_dd$t("table_col")    := "formtablename",
            !!stdatadictEnv$i18n_dd$t("formname_col") := "formname"
@@ -344,6 +364,7 @@ create_formitems <- function(questions, items, vallabs) {
 #' Create the following tables for use in the data dictionary file:
 #' - visit form overview
 #' - casenode forms overview
+#' - centreform overview
 #' - subform (repetition table) overview
 #' - itemtables for each form
 #'
@@ -437,6 +458,10 @@ create_datadict_tables <- function(st_metadata, ...) {
   casenode_forms <- create_casenodeforms(forms)
   intermediates$casenode_forms <- casenode_forms
   datadict_tables$form_overview$casenode_forms <- casenode_forms
+
+  centre_forms <- create_centerforms(forms)
+  intermediates$centre_forms <- centre_forms
+  datadict_tables$form_overview$centre_forms <- centre_forms
 
   sub_forms <- create_subforms(questions)
   intermediates$sub_forms <- sub_forms
