@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">stdatadict</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -32,9 +32,15 @@
     </div>
 
     <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.4.2" id="stdatadict-042">stdatadict 0.4.2<a class="anchor" aria-label="anchor" href="#stdatadict-042"></a></h2>
+<p>stdatadict 0.4.2</p>
+<ul><li>
+<strong>Bugfix/Enhancent:</strong> The project setup data files don’t allow to distinguish between casenode forms and centre forms. The <code><a href="../reference/read_metadata.html">read_metadata()</a></code> function has a new (experimental) paramater: <code>detect_ctr_forms</code> that if set to <code>TRUE</code> attempts to identify the centre forms by reading the headers of all data tables. This allows the data dictionary to display those forms as a seperate form catagory. Otherwise it will be treated as a casenode form.</li>
+</ul></div>
+    <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.4.1" id="stdatadict-041">stdatadict 0.4.1<a class="anchor" aria-label="anchor" href="#stdatadict-041"></a></h2>
 <ul><li><p><strong>New Colortheme</strong> “num3” resembles the colors of of the num website “<a href="https://www.netzwerk-universitaetsmedizin.de" class="external-link uri">https://www.netzwerk-universitaetsmedizin.de</a>”. (#9)</p></li>
-<li><p><strong>Enhancement</strong> It is now possible to defins the color of the “select all” question independently from the colors of the “select” column.</p></li>
+<li><p><strong>Enhancement</strong> It is now possible to define the color of the “select all” question independently from the colors of the “select” column.</p></li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.4.0" id="stdatadict-040">stdatadict 0.4.0<a class="anchor" aria-label="anchor" href="#stdatadict-040"></a></h2>
@@ -213,7 +219,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer></div>

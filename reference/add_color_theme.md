@@ -1,0 +1,161 @@
+# Create a New Data Dictionary Color Theme
+
+Define a new color theme for the data dictionary workbook, based on the
+color definition from a template theme. You only have to define those
+parameters that deviate from that template.
+
+The newly defined color theme will be added to the list of available
+themes and if `use_theme = TRUE` use the new theme for creating the data
+dictionary excel workbook.
+
+Use [`ls_color_themes()`](ls_color_themes.md) to list all currently
+available themes.
+
+## Usage
+
+``` r
+add_color_theme(
+  name,
+  template = "purpur",
+  use_theme = TRUE,
+  bg_primary = NULL,
+  font_primary = NULL,
+  bg_subtitle = NULL,
+  font_subtitle = NULL,
+  bg_h1 = NULL,
+  font_h1 = NULL,
+  bg_tablehead = NULL,
+  font_tablehead = NULL,
+  bg_visit = NULL,
+  font_visit = NULL,
+  bg_tablecol_overview = NULL,
+  font_tablecol_overview = NULL,
+  bg_tablecol_items = NULL,
+  font_tablecol_items = NULL,
+  border_tablecol_items = NULL,
+  font_hidden = NULL,
+  bg_select_column = NULL,
+  font_select_column = NULL,
+  border_select_column = NULL
+)
+```
+
+## Arguments
+
+- name:
+
+  of the new color theme
+
+- template:
+
+  name of the color theme from which the new theme inherits color
+  values. The default is "purpur".
+
+- use_theme:
+
+  logical. Should the newly defined theme used for the workbook? Default
+  = TRUE
+
+- bg_primary:
+
+  character color name or RGB hex code: background for document and form
+  titles
+
+- font_primary:
+
+  character color name or RGB hex code: font color for document and form
+  titles
+
+- bg_subtitle:
+
+  character color name or RGB hex code: background subtitle
+
+- font_subtitle:
+
+  character color name or RGB hex code: font color subtitle
+
+- bg_h1:
+
+  character color name or RGB hex code: background heading
+
+- font_h1:
+
+  character color name or RGB hex code: font color heading
+
+- bg_tablehead:
+
+  character color name or RGB hex code: background column names
+
+- font_tablehead:
+
+  character color name or RGB hex code: font color column names
+
+- bg_visit:
+
+  character color name or RGB hex code: background visit names
+
+- font_visit:
+
+  character color name or RGB hex code: font color visit names
+
+- bg_tablecol_overview:
+
+  character color name or RGB hex code: background table names in form
+  overview
+
+- font_tablecol_overview:
+
+  character color name or RGB hex code: font color table names in form
+  overview
+
+- bg_tablecol_items:
+
+  character color name or RGB hex code: background table names in form
+  items
+
+- font_tablecol_items:
+
+  character color name or RGB hex code: font color table names in form
+  items
+
+- border_tablecol_items:
+
+  character color name or RGB hex code: border table names in form items
+
+- font_hidden:
+
+  character color name or RGB hex code: font color hidden forms and
+  items
+
+- bg_select_column:
+
+  character color name or RGB hex code: background color of 'select'
+  column
+
+- font_select_column:
+
+  character color name or RGB hex code: font color of 'select' column
+
+- border_select_column:
+
+  character color name or RGB hex code: font color of 'select' border
+
+## Value
+
+new color theme as named list, invisibly
+
+## See also
+
+[`use_color_theme()`](use_color_theme.md)
+[`ls_color_themes()`](ls_color_themes.md)
+
+## Examples
+
+``` r
+add_color_theme("my_theme",
+                template = "purpur",
+                bg_primary = "steelblue4",
+                font_subtitle = "steelblue4",
+                bg_h1 = "steelblue2",
+                font_h1 = "#111188")
+```

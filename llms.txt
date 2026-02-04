@@ -1,0 +1,129 @@
+# stdatadict - Secutrial Data Dictionary & Variable Selection
+
+This R package provides functions for creating a data dictionary or
+variable selection excel file based on the metadata files of an
+Secutrial data export and additional files provided by the user.
+
+A **data dictionary** is basically a compact form of the
+“Datensatztabelle/Data Set Table” from Secutrial. Since it is created
+from the exported meta data it holds only information about the
+variables and forms that are included in the export. Furthermore it has
+no information about data capture rules (e.g. under which circumstances
+a variable is shown in the data capture) or unit conversion factors,
+since this data is also not available in the export metadata. You have
+to extract these informations from other sources and add it to the form
+item tables, during the creation process.
+
+A **variables selection table** is broadly speaking, a *data dictionay*
+based on a full export, with a `select` column attached to the form item
+tables. This ‘select’ column however can hold more or less complex check
+rules, that makes it possible for the user to select entire variable
+groups.
+
+This package builds upon the the following R packages:
+
+- [openxlsx2](https://janmarvin.github.io/openxlsx2/) for creating the
+  excel file.
+- [shiny.i18n](https://appsilon.github.io/shiny.i18n/) for language
+  switching.
+
+*Automatic translation of questions, item labels etc. is not
+implemented. But I would happily do so given enough time and provided an
+api key for google.translate, DeepL or any other translation tool.*
+
+## Installation
+
+### Prerequisites
+
+Install the `remotes` package.
+
+``` r
+if (!rlang::is_installed("remotes")) install.packages("remotes")
+```
+
+### Installation from gitLab or gitHub (mirror repository)
+
+Install `stdatadict` from the [gitlab
+repository](https://gitlab.gwdg.de/medinfpub/stdatadict) repository with
+dependent packages.
+
+``` r
+remotes::install_git("https://gitlab.gwdg.de/medinfpub/stdatadict", dependencies = TRUE)
+```
+
+Install from the [github mirror
+repository](https://github.com/mrainers/stdatadict) repository with
+dependent packages.
+
+``` r
+remotes::install_github("mrainers/stdatadict", dependencies = TRUE)
+```
+
+## License
+
+MIT License Copyright (c) 2025 Department of Medical Informatics -
+University Medical Center Göttingen
+
+# Package index
+
+## All functions
+
+- [`active_color_theme()`](active_color_theme.md) : Get The Name Of The
+  Active Color Theme
+- [`add_asofdate()`](add_asofdate.md) : Add Export As of Date
+- [`add_color_theme()`](add_color_theme.md) : Create a New Data
+  Dictionary Color Theme
+- [`add_empty_row()`](add_empty_row.md) : Format an empty Row in the
+  worksheet
+- [`add_form_overview()`](add_form_overview.md) : Create And Add A Form
+  Overview To The Data Dictionary
+- [`add_form_sheets()`](add_form_sheets.md) : Ceate And Add Form Sheets
+  To The Data Dictionary
+- [`add_heading1()`](add_heading1.md) : Add Heading 1
+- [`add_heading2()`](add_heading2.md) : Add Heading 2
+- [`add_paragraph()`](add_paragraph.md) : Add A text paragraph
+- [`add_scope_selection()`](add_scope_selection.md) : Add Scope
+  Selection Table to workbook
+- [`add_section()`](add_section.md) : Add Section Title
+- [`add_styled_line()`](add_styled_line.md) : Add Styled Text To The
+  Workbook
+- [`add_subtitle()`](add_subtitle.md) : Add Document Subtitle
+- [`add_title()`](add_title.md) : Add Document Title
+- [`clean_region_name()`](clean_region_name.md) : Clean Excel Region
+  Names
+- [`create_datadict()`](create_datadict.md) : Create A data dictionary
+- [`create_datadict_tables()`](create_datadict_tables.md) : Create Data
+  Dictionary Tables
+- [`create_scope_table()`](create_scope_table.md) : Create a Scope Table
+- [`fmt_txt_at()`](fmt_txt_at.md) : Format Matched Strings In a Text.
+- [`get_color_theme()`](get_color_theme.md) : Get Data Dictionary Color
+  Theme
+- [`get_datadict_language()`](get_datadict_language.md) : Get Language
+  Setting for Data Dictionary
+- [`get_datadict_language_codes()`](get_datadict_language_codes.md) :
+  Get available Language Setting for Data Dictionary
+- [`insert_worksheet()`](insert_worksheet.md) : Insert a Worksheet into
+  the Workbook
+- [`intermediates`](intermediates.md) : stdatadict Environment For
+  Intermediate Calculation Results
+- [`join_scopes()`](join_scopes.md) : Add Variable Scopes To Form Item
+  Tables
+- [`join_with_form_items()`](join_with_form_items.md) : Add Data To Form
+  Item Tables
+- [`link_form_sheets()`](link_form_sheets.md) : Link Form Names in the
+  Form Overview
+- [`ls_color_themes()`](ls_color_themes.md) : List All Available Color
+  Theme Names for Data Dictionary Creation.
+- [`read_metadata()`](read_metadata.md) : Read Setup Data Files From A
+  SecuTrial or stExport Directory
+- [`set_datadict_language()`](set_datadict_language.md) : Set Language
+  of the Data Dictionary
+- [`show_color_theme()`](show_color_theme.md) : Show Color Theme
+- [`style_datadict()`](style_datadict.md) : Create And Register Data
+  Dictionary Workbook Styles
+- [`tint_color()`](tint_color.md) : Tint or shade a color
+- [`use_color_theme()`](use_color_theme.md) : Set Color Theme That's
+  Gonna Be Used For The Data Dictionary
+- [`wb_insert_row()`](wb_insert_row.md) : Insert a row in a sheet
+  (emulated)
+
