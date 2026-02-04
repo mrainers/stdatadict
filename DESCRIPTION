@@ -29,3 +29,5 @@ Imports:
     withr
 Suggests:
     kableExtra
+Depends:
+    R (>= 4.2.0)
