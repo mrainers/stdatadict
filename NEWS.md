@@ -1,3 +1,5 @@
+# stdatadict 0.4.2
+
 stdatadict 0.4.2
 
 - **Bugfix/Enhancent:** The project setup data files don't allow to distinguish
