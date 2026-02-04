@@ -53,7 +53,7 @@ refine_fs <- function(fs, vpfs, project_id) {
 
   # add empty formtype variable if not present in the table.
   if (!("formtype" %in% names(fs))) {
-    fs |> mutate(formtype = NA_character_)
+    fs <- fs |> mutate(formtype = NA_character_)
   }
 
   fs |>
@@ -62,9 +62,9 @@ refine_fs <- function(fs, vpfs, project_id) {
     mutate(is_subform = str_detect(.data$formtablename, "^emnp")) |>
     mutate(formtablename = str_remove(.data$formtablename, str_c("mnp", project_id))) |>
     mutate(formtype = dplyr::case_when(
+      !is.na(.data$formtype) ~ .data$formtype, # in case center forms were already identified
       formid %in% vpfs$formid ~ "visit",
       .data$is_subform ~ "subform",
-      .data$formtype == "centre" ~ "centre",
       TRUE ~ "casenode"
     )) |>
     # hidden visit forms are not in the visitplanforms (vpfs), so they are falsely

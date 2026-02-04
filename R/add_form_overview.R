@@ -191,6 +191,15 @@ add_form_overview <- function(wb,
         dims = wb_dims(x = data, cols = 3:(length(data)), from_row = row_idx),
         horizontal = "center"
       )
+
+      # Fix borders removed from the header
+      wb$add_border(
+        dims = wb_dims(x = data, from_row = row_idx),
+        inner_hgrid = "thin",
+        inner_hcolor = wb_color("black"),
+        inner_vgrid = "thin",
+        inner_vcolor = wb_color("black")
+      )
     }
 
     # subform cell styles -------------------------

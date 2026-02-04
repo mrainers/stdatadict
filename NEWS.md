@@ -1,9 +1,18 @@
+stdatadict 0.4.2
+
+- **Bugfix/Enhancent:** The project setup data files don't allow to distinguish
+  between casenode forms and centre forms. The `read_metadata()` function has 
+  a new (experimental) paramater: `detect_ctr_forms` that if set to `TRUE` 
+  attempts to identify the centre forms by reading the headers of all data tables.
+  This allows the data dictionary to display those forms as a seperate form 
+  catagory. Otherwise it will be treated as a casenode form.
+
 # stdatadict 0.4.1
 
 - **New Colortheme** "num3" resembles the colors of of the num website 
   "https://www.netzwerk-universitaetsmedizin.de". (#9)
   
-- **Enhancement** It is now possible to defins the color of the "select all" 
+- **Enhancement** It is now possible to define the color of the "select all" 
   question independently from the colors of the "select" column. 
   
 
