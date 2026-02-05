@@ -1,6 +1,8 @@
-# stdatadict 0.4.2
+# stdatadict 0.4.3
 
-stdatadict 0.4.2
+- **BugFix:** Adjust package styling functions to work with `openxlsx2` >= 1.22.
+
+# stdatadict 0.4.2
 
 - **Bugfix/Enhancent:** The project setup data files don't allow to distinguish
   between casenode forms and centre forms. The `read_metadata()` function has 
