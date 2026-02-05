@@ -243,7 +243,7 @@ style_datadict <- function(wb, theme_name = stdatadictEnv$use_color_theme) {
   wb_styles %>%
     purrr::iwalk(~ map(
       .x,
-      ~ wb_add_style(wb, .x, .y),
+      ~ wb$add_style(.x, .y),
       name = .y
     ))
 
@@ -280,7 +280,7 @@ style_datadict <- function(wb, theme_name = stdatadictEnv$use_color_theme) {
 
   # add cell styles to the workbook
   cell_styles %>%
-    purrr::iwalk(~ wb_add_style(wb, .x, .y))
+    purrr::iwalk(~ wb$add_style(.x, .y))
 
   invisible(wb)
 }
