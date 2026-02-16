@@ -8,11 +8,11 @@
 ## Citation
 
 Rainers M (2026). *stdatadict: Create Data Dictionary or Variable
-Selection File from SecuTrial Export*. R package version 0.4.3.
+Selection File from SecuTrial Export*. R package version 0.4.4.
 
     @Manual{,
       title = {stdatadict: Create Data Dictionary or Variable Selection File from SecuTrial Export},
       author = {Miriam Rainers},
       year = {2026},
-      note = {R package version 0.4.3},
+      note = {R package version 0.4.4},
     }
