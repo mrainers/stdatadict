@@ -1,3 +1,8 @@
+# stdatadict 0.4.4
+
+- **BugFix:** List of embedded tables in the form sheets was calculated wrongly 
+  when centre tables are added as extra form type. This is now corrected.
+
 # stdatadict 0.4.3
 
 - **BugFix:** Adjust package styling functions to work with `openxlsx2` >= 1.22.

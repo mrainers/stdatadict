@@ -43,7 +43,7 @@ add_form_sheets <- function(wb, datadict_tables, var_select = FALSE) {
     dplyr::bind_rows() %>%
     tibble::deframe()
 
-  form_subtables <- datadict_tables$form_overview[[3]] %>%
+  form_subtables <- datadict_tables$form_overview[["sub_forms"]] %>%
     rename(formname = 3) %>%
     summarise(subtables = paste(.data$formname, collapse = ", "), .by = 1) %>%
     tibble::deframe() %>%
