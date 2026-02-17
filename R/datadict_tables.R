@@ -229,7 +229,7 @@ create_visitforms <- function(forms, visits, vpfs) {
       values_fn = ~ stringr::str_flatten(.x, ", ")
     ) |>
     select(-any_of("NA")) |>
-    mutate(across(4:last_col(), replace_na, "-")) |>
+    mutate(across(4:last_col(), ~ replace_na(.x, "-"))) |>
     rename(!!stdatadictEnv$i18n_dd$t("table_col")   := "formtablename",
            !!stdatadictEnv$i18n_dd$t("formname_col") := "formname"
            )
