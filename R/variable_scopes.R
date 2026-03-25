@@ -69,7 +69,7 @@ join_scopes <- function(datadict_tables, scope) {
           select("Scope", "data") |>
           tidyr::unnest(cols = "data") |>
           # combine scopes in case a variable belongs to multiple scopes
-          mutate(Scope = str_flatten_comma(.data$Scope), .by = "varname_col") |>
+          mutate(Scope = stringr::str_flatten_comma(.data$Scope), .by = "varname_col") |>
           distinct(.data$varname_col, .keep_all = TRUE)
     )
 
