@@ -63,10 +63,15 @@ create_scope_table <- function(data, scopeid, ...) {
 join_scopes <- function(datadict_tables, scope) {
   if (is.data.frame(scope)) scope <- list(scope)
 
-  scope_data <- scope %>%
-    map(~ .x %>%
-          select("Scope", "data") %>%
-          tidyr::unnest(cols = "data"))
+  scope_data <- scope |>
+    map(\(scopetable)
+        scopetable |>
+          select("Scope", "data") |>
+          tidyr::unnest(cols = "data") |>
+          # combine scopes in case a variable belongs to multiple scopes
+          mutate(Scope = str_flatten_comma(.data$Scope), .by = "varname_col") |>
+          distinct(.data$varname_col, .keep_all = TRUE)
+    )
 
   while (!purrr::is_empty(scope_data)) {
     # get translated variable names that will be used for table join
